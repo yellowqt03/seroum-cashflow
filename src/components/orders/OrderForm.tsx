@@ -333,36 +333,38 @@ export function OrderForm({ onOrderSubmit, onCancel }: OrderFormProps) {
         </div>
       </div>
 
-      {/* 하단 네비게이션 */}
-      <div className="flex justify-between pt-6 border-t">
-        <Button
-          variant="outline"
-          onClick={() => setStep(Math.max(1, step - 1))}
-          disabled={step === 1}
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          이전
-        </Button>
+      {/* 하단 네비게이션 - 화면 하단 고정 */}
+      <div className="sticky bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-lg -mx-6 px-6 py-4 mt-6">
+        <div className="flex justify-between max-w-7xl mx-auto">
+          <Button
+            variant="outline"
+            onClick={() => setStep(Math.max(1, step - 1))}
+            disabled={step === 1}
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            이전
+          </Button>
 
-        <div className="space-x-4">
-          {step < 3 ? (
-            <Button
-              onClick={() => setStep(step + 1)}
-              disabled={!canProceedToNext() || loading}
-            >
-              다음
-              <ArrowRight className="h-4 w-4 ml-2" />
-            </Button>
-          ) : (
-            <Button
-              onClick={handleOrderSubmit}
-              disabled={!canProceedToNext() || loading}
-              className="bg-green-600 hover:bg-green-700"
-            >
-              <Save className="h-4 w-4 mr-2" />
-              {loading ? '처리 중...' : '주문 완료'}
-            </Button>
-          )}
+          <div className="space-x-4">
+            {step < 3 ? (
+              <Button
+                onClick={() => setStep(step + 1)}
+                disabled={!canProceedToNext() || loading}
+              >
+                다음
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            ) : (
+              <Button
+                onClick={handleOrderSubmit}
+                disabled={!canProceedToNext() || loading}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                <Save className="h-4 w-4 mr-2" />
+                {loading ? '처리 중...' : '주문 완료'}
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </div>
