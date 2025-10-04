@@ -1,0 +1,295 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// PostgreSQL에서는 String으로 enum 처리
+// 서비스 카테고리: IMMUNE_RECOVERY, CIRCULATION, BRAIN_COGNITIVE, DIGESTIVE, BEAUTY_ANTI_AGING, NUTRITION_ENERGY, OTHER
+// 할인 유형: VIP, BIRTHDAY, EMPLOYEE, REGULAR
+// 유입 경로: SEARCH, STAFF, AD, EVENT, ENDOSCOPY, CLINIC, REFERRAL
+// 결제 방법: CARD, CASH, TRANSFER
+// 주문 상태: PENDING, IN_PROGRESS, COMPLETED, CANCELLED
+// 사용자 역할: ADMIN, STAFF
+
+// 사용자 (관리자/직원)
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique // 이메일 (로그인 ID)
+  password  String   // 비밀번호 (해시)
+  name      String   // 이름
+  role      String   @default("STAFF") // 역할 (ADMIN, STAFF)
+  isActive  Boolean  @default(true) // 활성 상태
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+// 서비스 마스터
+model Service {
+  id          String          @id @default(cuid())
+  name        String          @unique // 서비스명 (예: "파워비타민")
+  category    String          // 카테고리 (IMMUNE_RECOVERY, CIRCULATION, etc.)
+  price       Int             // 기본 가격 (원)
+  duration    Int             // 소요 시간 (분)
+  description String?         // 효과 설명
+  isActive    Boolean         @default(true) // 활성 상태
+
+  // 패키지 설정
+  package4Price  Int? // 4회 패키지 가격 (10% 할인)
+  package8Price  Int? // 8회 패키지 가격 (20% 할인)
+  package10Price Int? // 10회 패키지 가격 (25% 할인, 킬레이션 전용)
+
+  // 추가구성 옵션 허용
+  allowWhiteJade     Boolean @default(true)  // 백옥 추가 가능
+  allowWhiteJadeDouble Boolean @default(true) // 백옥더블 추가 가능
+  allowThymus        Boolean @default(true)  // 가슴샘 추가 가능
+  allowPowerShot     Boolean @default(true)  // 강력주사 추가 가능
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orderItems OrderItem[]
+
+  @@map("services")
+}
+
+// 추가구성 옵션
+model AddOnOption {
+  id          String @id @default(cuid())
+  name        String @unique // 옵션명 (예: "백옥", "백옥더블")
+  price       Int    // 가격
+  description String? // 설명
+  isActive    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orderAddOns OrderAddOn[]
+
+  @@map("add_on_options")
+}
+
+// 고객 정보
+model Customer {
+  id           String         @id @default(cuid())
+  name         String         // 고객명
+  phone        String?        @unique // 전화번호
+  birthDate    DateTime?      // 생년월일
+  discountType String         @default("REGULAR") // 할인 유형 (VIP, BIRTHDAY, EMPLOYEE, REGULAR)
+  source       String         // 유입 경로 (SEARCH, STAFF, AD, etc.)
+  isVip        Boolean        @default(false) // VIP 여부
+
+  // 생일자 할인 사용 이력 (연도별 관리)
+  birthdayDiscountYear Int?  // 생일 할인 사용 연도
+  birthdayUsedCount    Int   @default(0) // 해당 연도 생일 할인 사용 횟수
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders Order[]
+  discountApprovalRequests DiscountApprovalRequest[]
+
+  @@map("customers")
+}
+
+// 주문
+model Order {
+  id            String        @id @default(cuid())
+  customerId    String
+  customer      Customer      @relation(fields: [customerId], references: [id])
+
+  status        String        @default("PENDING") // 주문 상태 (PENDING, IN_PROGRESS, COMPLETED, CANCELLED)
+  paymentMethod String        // 결제 방법 (CARD, CASH, TRANSFER)
+
+  // 금액 정보
+  subtotal      Int           // 소계 (할인 전)
+  discountAmount Int          @default(0) // 할인 금액
+  finalAmount   Int           // 최종 결제 금액
+
+  // 할인 정보
+  appliedDiscountType String?       // 적용된 할인 유형 (VIP, BIRTHDAY, EMPLOYEE)
+  discountRate       Float?         // 적용된 할인율 (0.1 = 10%)
+
+  // 부가 정보
+  notes         String?       // 특이사항
+
+  orderDate     DateTime      @default(now()) // 주문일
+  completedAt   DateTime?     // 완료일
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  orderItems  OrderItem[]
+  orderAddOns OrderAddOn[]
+
+  @@map("orders")
+}
+
+// 주문 서비스 항목
+model OrderItem {
+  id        String @id @default(cuid())
+  orderId   String
+  order     Order  @relation(fields: [orderId], references: [id])
+  serviceId String
+  service   Service @relation(fields: [serviceId], references: [id])
+
+  quantity      Int     // 수량
+  packageType   String? // 패키지 타입 ("single", "package4", "package8", "package10")
+  unitPrice     Int     // 단가 (패키지 할인 적용된 가격)
+  totalPrice    Int     // 총 가격
+
+  createdAt DateTime @default(now())
+
+  @@map("order_items")
+}
+
+// 주문 추가구성 옵션
+model OrderAddOn {
+  id          String      @id @default(cuid())
+  orderId     String
+  order       Order       @relation(fields: [orderId], references: [id])
+  addOnId     String
+  addOn       AddOnOption @relation(fields: [addOnId], references: [id])
+
+  quantity    Int         // 수량
+  unitPrice   Int         // 단가
+  totalPrice  Int         // 총 가격
+
+  createdAt DateTime @default(now())
+
+  @@map("order_add_ons")
+}
+
+// 쿠폰 정보
+model Coupon {
+  id            String    @id @default(cuid())
+  name          String    // 쿠폰명
+  discountType  String    // 할인 유형 ("PERCENT", "AMOUNT")
+  discountValue Float     // 할인값 (0.5 = 50% 또는 고정금액)
+
+  // 사용 조건
+  minAmount     Int?      // 최소 주문 금액
+  maxDiscount   Int?      // 최대 할인 금액
+  usageLimit    Int?      // 총 사용 횟수 제한
+  usedCount     Int       @default(0) // 사용된 횟수
+
+  // 유효 기간
+  validFrom     DateTime  // 유효 시작일
+  validUntil    DateTime  // 유효 종료일
+
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  couponUsages CouponUsage[]
+
+  @@map("coupons")
+}
+
+// 쿠폰 사용 이력
+model CouponUsage {
+  id         String   @id @default(cuid())
+  couponId   String
+  coupon     Coupon   @relation(fields: [couponId], references: [id])
+  customerId String   // 고객 ID (직접 참조)
+  orderId    String?  // 주문 ID (옵션)
+
+  usedAt     DateTime @default(now())
+
+  @@map("coupon_usages")
+}
+
+// 매출 집계 (캐시 테이블)
+model SalesReport {
+  id          String   @id @default(cuid())
+  reportDate  DateTime // 집계 날짜
+  reportType  String   // 집계 타입 ("DAILY", "WEEKLY", "MONTHLY", "YEARLY")
+
+  // 매출 정보
+  totalSales        Int // 총 매출
+  ivCenterSales     Int // 수액센터 매출
+  endoscopySales    Int // 내시경센터 매출
+
+  // 할인 정보
+  totalDiscount     Int // 총 할인 금액
+  vipDiscount       Int // VIP 할인
+  birthdayDiscount  Int // 생일자 할인
+  employeeDiscount  Int // 직원 할인
+  packageDiscount   Int // 패키지 할인
+
+  // 고객 정보
+  totalCustomers    Int // 총 고객 수
+  newCustomers      Int // 신규 고객 수
+
+  // 서비스 정보
+  totalOrders       Int // 총 주문 수
+  completedOrders   Int // 완료된 주문 수
+  cancelledOrders   Int // 취소된 주문 수
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([reportDate, reportType])
+  @@map("sales_reports")
+}
+
+// 특이사항 관리
+model MonthlyNote {
+  id        String   @id @default(cuid())
+  year      Int      // 연도
+  month     Int      // 월
+  content   String   // 특이사항 내용
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([year, month])
+  @@map("monthly_notes")
+}
+
+// 중복 할인 승인 대기
+model DiscountApprovalRequest {
+  id        String @id @default(cuid())
+
+  // 주문 정보
+  orderId   String?  // 주문 ID (생성된 경우)
+  customerId String  // 고객 ID
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  // 할인 정보
+  discountType       String   // 할인 유형 (VIP, BIRTHDAY, EMPLOYEE, PACKAGE)
+  appliedDiscounts   String   // JSON 형태의 적용된 할인 정보
+  originalAmount     Int      // 원래 금액
+  discountAmount     Int      // 할인 금액
+  finalAmount        Int      // 최종 금액
+
+  // 중복 할인 상세
+  conflictReason     String   // 중복 이유 설명
+  staffNote          String?  // 직원 메모
+
+  // 승인 상태
+  status            String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  requestedBy       String   // 요청자 (직원명/ID)
+  requestedAt       DateTime @default(now())
+
+  // 관리자 처리
+  approvedBy        String?  // 승인자
+  approvedAt        DateTime?
+  adminNote         String?  // 관리자 메모
+
+  // 서비스 정보 (JSON)
+  serviceDetails    String   // 서비스 상세 정보
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("discount_approval_requests")
+}
