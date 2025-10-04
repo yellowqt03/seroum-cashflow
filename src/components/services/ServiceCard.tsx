@@ -6,16 +6,17 @@ import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { formatPrice, formatDuration } from '@/lib/utils'
 import { SERVICE_CATEGORIES, Service } from '@/lib/types'
-import { Edit, Clock, DollarSign, Package } from 'lucide-react'
+import { Edit, Clock, DollarSign, Package, Trash2 } from 'lucide-react'
 
 interface ServiceCardProps {
   service: Service
   onEdit?: (service: Service) => void
+  onDelete?: (service: Service) => void
   onSelect?: (service: Service) => void
   isSelected?: boolean
 }
 
-export function ServiceCard({ service, onEdit, onSelect, isSelected = false }: ServiceCardProps) {
+export function ServiceCard({ service, onEdit, onDelete, onSelect, isSelected = false }: ServiceCardProps) {
   const categoryName = SERVICE_CATEGORIES[service.category as keyof typeof SERVICE_CATEGORIES] || service.category
 
   const getCategoryColor = (category: string) => {
@@ -48,17 +49,36 @@ export function ServiceCard({ service, onEdit, onSelect, isSelected = false }: S
               {categoryName}
             </Badge>
           </div>
-          {onEdit && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation()
-                onEdit(service)
-              }}
-            >
-              <Edit className="h-4 w-4" />
-            </Button>
+          {(onEdit || onDelete) && (
+            <div className="flex gap-1">
+              {onEdit && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onEdit(service)
+                  }}
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+              )}
+              {onDelete && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    if (confirm(`"${service.name}" 서비스를 삭제하시겠습니까?`)) {
+                      onDelete(service)
+                    }
+                  }}
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
           )}
         </div>
       </CardHeader>

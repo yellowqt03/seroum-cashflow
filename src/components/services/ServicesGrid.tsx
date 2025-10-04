@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import { ServiceCard } from './ServiceCard'
+import { ServiceForm } from './ServiceForm'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Service, SERVICE_CATEGORIES } from '@/lib/types'
-import { Search, Filter } from 'lucide-react'
+import { Search, Filter, Plus } from 'lucide-react'
 
 export function ServicesGrid() {
   const [services, setServices] = useState<Service[]>([])
@@ -13,6 +14,8 @@ export function ServicesGrid() {
   const [error, setError] = useState<string | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [searchTerm, setSearchTerm] = useState('')
+  const [editingService, setEditingService] = useState<Service | null>(null)
+  const [showAddForm, setShowAddForm] = useState(false)
 
   useEffect(() => {
     fetchServices()
@@ -31,6 +34,66 @@ export function ServicesGrid() {
       setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleAddService = async (data: Partial<Service>) => {
+    try {
+      const response = await fetch('/api/services', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+
+      if (!response.ok) {
+        throw new Error('서비스 추가에 실패했습니다.')
+      }
+
+      await fetchServices()
+      setShowAddForm(false)
+      alert('서비스가 추가되었습니다.')
+    } catch (err) {
+      throw err
+    }
+  }
+
+  const handleEditService = async (data: Partial<Service>) => {
+    if (!editingService) return
+
+    try {
+      const response = await fetch(`/api/services/${editingService.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+
+      if (!response.ok) {
+        throw new Error('서비스 수정에 실패했습니다.')
+      }
+
+      await fetchServices()
+      setEditingService(null)
+      alert('서비스가 수정되었습니다.')
+    } catch (err) {
+      throw err
+    }
+  }
+
+  const handleDeleteService = async (service: Service) => {
+    try {
+      const response = await fetch(`/api/services/${service.id}`, {
+        method: 'DELETE'
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || '서비스 삭제에 실패했습니다.')
+      }
+
+      await fetchServices()
+      alert('서비스가 삭제되었습니다.')
+    } catch (err) {
+      alert(err instanceof Error ? err.message : '서비스 삭제에 실패했습니다.')
     }
   }
 
@@ -69,6 +132,14 @@ export function ServicesGrid() {
 
   return (
     <div className="space-y-6">
+      {/* 추가 버튼 */}
+      <div className="flex justify-end">
+        <Button onClick={() => setShowAddForm(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          서비스 추가
+        </Button>
+      </div>
+
       {/* 필터링 및 검색 */}
       <div className="bg-white p-6 rounded-lg border border-gray-200">
         <div className="flex flex-col lg:flex-row gap-4">
@@ -148,6 +219,8 @@ export function ServicesGrid() {
           <ServiceCard
             key={service.id}
             service={service}
+            onEdit={setEditingService}
+            onDelete={handleDeleteService}
           />
         ))}
       </div>
@@ -173,6 +246,18 @@ export function ServicesGrid() {
             </Button>
           )}
         </div>
+      )}
+
+      {/* 서비스 추가/수정 폼 */}
+      {(showAddForm || editingService) && (
+        <ServiceForm
+          service={editingService || undefined}
+          onSubmit={editingService ? handleEditService : handleAddService}
+          onCancel={() => {
+            setShowAddForm(false)
+            setEditingService(null)
+          }}
+        />
       )}
     </div>
   )
