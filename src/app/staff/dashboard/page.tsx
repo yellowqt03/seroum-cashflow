@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation'
 import { getSession, isStaff } from '@/lib/auth'
 import Link from 'next/link'
-import { Button } from '@/components/ui/Button'
-import { LogOut, Settings, Users, FileText, User, Activity, Clock } from 'lucide-react'
+import { LogoutButton } from '@/components/ui/LogoutButton'
+import { Settings, Users, FileText, User, Activity, Clock } from 'lucide-react'
 
 export default async function StaffDashboard() {
   const user = await getSession()
@@ -80,12 +80,7 @@ export default async function StaffDashboard() {
                 </p>
               </div>
             </div>
-            <form action="/api/auth/logout" method="POST">
-              <Button variant="outline" size="sm" className="group">
-                <LogOut className="h-4 w-4 mr-2 group-hover:rotate-12 transition-transform" />
-                로그아웃
-              </Button>
-            </form>
+            <LogoutButton />
           </div>
         </div>
       </header>
