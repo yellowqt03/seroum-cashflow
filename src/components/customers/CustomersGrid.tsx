@@ -8,7 +8,9 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Customer, DISCOUNT_TYPES, CUSTOMER_SOURCES } from '@/lib/types'
-import { Search, Filter, UserPlus, Users, Crown, Gift, Briefcase } from 'lucide-react'
+import { Search, Filter, UserPlus, Users, Crown, Gift, Briefcase, ChevronLeft, ChevronRight } from 'lucide-react'
+
+const ITEMS_PER_PAGE = 30
 
 export function CustomersGrid() {
   const [customers, setCustomers] = useState<Customer[]>([])
@@ -20,6 +22,7 @@ export function CustomersGrid() {
   const [showForm, setShowForm] = useState(false)
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null)
   const [formLoading, setFormLoading] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
     fetchCustomers()
@@ -78,6 +81,24 @@ export function CustomersGrid() {
     setEditingCustomer(null)
   }
 
+  const handleDelete = async (customer: Customer) => {
+    try {
+      const response = await fetch(`/api/customers/${customer.id}`, {
+        method: 'DELETE'
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || '고객 삭제에 실패했습니다.')
+      }
+
+      await fetchCustomers()
+      alert('고객이 삭제되었습니다.')
+    } catch (err) {
+      alert(err instanceof Error ? err.message : '고객 삭제에 실패했습니다.')
+    }
+  }
+
   const filteredCustomers = customers.filter(customer => {
     const matchesSearch = customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (customer.phone?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false)
@@ -85,6 +106,17 @@ export function CustomersGrid() {
     const matchesSource = selectedSource === 'all' || customer.source === selectedSource
     return matchesSearch && matchesDiscountType && matchesSource
   })
+
+  // 페이지네이션
+  const totalPages = Math.ceil(filteredCustomers.length / ITEMS_PER_PAGE)
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+  const endIndex = startIndex + ITEMS_PER_PAGE
+  const paginatedCustomers = filteredCustomers.slice(startIndex, endIndex)
+
+  // 필터 변경 시 첫 페이지로
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchTerm, selectedDiscountType, selectedSource])
 
   // 통계 계산
   const stats = {
@@ -230,14 +262,74 @@ export function CustomersGrid() {
 
       {/* 고객 그리드 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredCustomers.map((customer) => (
+        {paginatedCustomers.map((customer) => (
           <CustomerCard
             key={customer.id}
             customer={customer}
             onEdit={handleEdit}
+            onDelete={handleDelete}
           />
         ))}
       </div>
+
+      {/* 페이지네이션 */}
+      {totalPages > 1 && (
+        <div className="sticky bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-lg -mx-6 px-6 py-4 mt-6">
+          <div className="flex items-center justify-between max-w-7xl mx-auto">
+            <div className="text-sm text-gray-600">
+              {startIndex + 1}-{Math.min(endIndex, filteredCustomers.length)} / {filteredCustomers.length}명
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-4 w-4 mr-1" />
+                이전
+              </Button>
+
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => {
+                  // 현재 페이지 근처만 표시
+                  if (
+                    page === 1 ||
+                    page === totalPages ||
+                    (page >= currentPage - 2 && page <= currentPage + 2)
+                  ) {
+                    return (
+                      <Button
+                        key={page}
+                        variant={currentPage === page ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setCurrentPage(page)}
+                        className="min-w-[40px]"
+                      >
+                        {page}
+                      </Button>
+                    )
+                  } else if (page === currentPage - 3 || page === currentPage + 3) {
+                    return <span key={page} className="px-2">...</span>
+                  }
+                  return null
+                })}
+              </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+              >
+                다음
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 빈 상태 */}
       {filteredCustomers.length === 0 && (

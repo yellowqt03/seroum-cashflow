@@ -7,16 +7,17 @@ import { Button } from '@/components/ui/Button'
 import { formatDate, formatPhoneNumber, isBirthdayMonth } from '@/lib/utils'
 import { DISCOUNT_TYPES, CUSTOMER_SOURCES, Customer } from '@/lib/types'
 import { getDiscountTypeColor } from '@/lib/discount'
-import { Edit, Phone, Calendar, MapPin, Gift, Crown } from 'lucide-react'
+import { Edit, Phone, Calendar, MapPin, Gift, Crown, Trash2 } from 'lucide-react'
 
 interface CustomerCardProps {
   customer: Customer
   onEdit?: (customer: Customer) => void
+  onDelete?: (customer: Customer) => void
   onSelect?: (customer: Customer) => void
   isSelected?: boolean
 }
 
-export function CustomerCard({ customer, onEdit, onSelect, isSelected = false }: CustomerCardProps) {
+export function CustomerCard({ customer, onEdit, onDelete, onSelect, isSelected = false }: CustomerCardProps) {
   const discountTypeName = DISCOUNT_TYPES[customer.discountType as keyof typeof DISCOUNT_TYPES] || customer.discountType
   const sourceName = CUSTOMER_SOURCES[customer.source as keyof typeof CUSTOMER_SOURCES] || customer.source
 
@@ -47,17 +48,36 @@ export function CustomerCard({ customer, onEdit, onSelect, isSelected = false }:
               {discountTypeName}
             </Badge>
           </div>
-          {onEdit && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation()
-                onEdit(customer)
-              }}
-            >
-              <Edit className="h-4 w-4" />
-            </Button>
+          {(onEdit || onDelete) && (
+            <div className="flex gap-1">
+              {onEdit && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onEdit(customer)
+                  }}
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+              )}
+              {onDelete && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    if (confirm(`"${customer.name}" 고객을 삭제하시겠습니까?`)) {
+                      onDelete(customer)
+                    }
+                  }}
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
           )}
         </div>
       </CardHeader>
