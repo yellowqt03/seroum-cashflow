@@ -3,8 +3,5 @@
   "devCommand": "next dev --turbopack",
   "installCommand": "npm install",
   "framework": "nextjs",
-  "regions": ["icn1"],
-  "env": {
-    "DATABASE_URL": "@database_url"
-  }
+  "regions": ["icn1"]
 }

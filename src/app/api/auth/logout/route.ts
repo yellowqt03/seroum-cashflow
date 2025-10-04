@@ -1,11 +1,13 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { clearSession } from '@/lib/auth'
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
     await clearSession()
 
-    return NextResponse.json({ message: '로그아웃되었습니다.' })
+    // 로그인 페이지로 리다이렉트
+    const url = new URL('/login', request.url)
+    return NextResponse.redirect(url)
   } catch (error) {
     console.error('로그아웃 오류:', error)
     return NextResponse.json(
