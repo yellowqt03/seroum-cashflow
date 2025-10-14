@@ -96,11 +96,34 @@ th {
   letter-spacing: 0.05em;
 }
 
-/* Remove glass effects and excessive shadows */
+/* Simple card styles */
 .glass-card {
-  display: none;
+  background: rgb(var(--color-bg-base));
+  border: 1px solid rgb(var(--color-border));
+  border-radius: var(--radius-lg);
 }
 
 .card-hover {
-  display: none;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
 }
