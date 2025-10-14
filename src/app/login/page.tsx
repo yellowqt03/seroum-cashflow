@@ -4,9 +4,11 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { useToast } from '@/components/providers/ToastProvider'
 
 export default function LoginPage() {
   const router = useRouter()
+  const { showToast } = useToast()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -28,18 +30,25 @@ export default function LoginPage() {
 
       if (!res.ok) {
         setError(data.error || '로그인에 실패했습니다.')
+        showToast(data.error || '로그인에 실패했습니다', 'error')
         return
       }
 
-      // 로그인 성공 - 역할에 따라 리다이렉트
-      if (data.user.role === 'ADMIN') {
-        router.push('/admin/dashboard')
-      } else {
-        router.push('/staff/dashboard')
-      }
-      router.refresh()
+      // 로그인 성공 토스트 표시
+      showToast(`${data.user.name}님, 환영합니다!`, 'success')
+
+      // 약간의 딜레이 후 리다이렉트 (토스트를 볼 시간을 줌)
+      setTimeout(() => {
+        if (data.user.role === 'ADMIN') {
+          router.push('/admin/dashboard')
+        } else {
+          router.push('/staff/dashboard')
+        }
+        router.refresh()
+      }, 800)
     } catch (err) {
       setError('로그인 중 오류가 발생했습니다.')
+      showToast('로그인 중 오류가 발생했습니다', 'error')
     } finally {
       setLoading(false)
     }
