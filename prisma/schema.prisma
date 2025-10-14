@@ -30,6 +30,8 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  couponAllocations StaffCouponAllocation[]
+
   @@map("users")
 }
 
@@ -190,6 +192,7 @@ model Coupon {
   updatedAt     DateTime  @updatedAt
 
   couponUsages CouponUsage[]
+  staffAllocations StaffCouponAllocation[]
 
   @@map("coupons")
 }
@@ -201,10 +204,38 @@ model CouponUsage {
   coupon     Coupon   @relation(fields: [couponId], references: [id])
   customerId String   // 고객 ID (직접 참조)
   orderId    String?  // 주문 ID (옵션)
+  usedByStaffId String? // 사용한 직원 ID (할당 관리용)
 
   usedAt     DateTime @default(now())
 
   @@map("coupon_usages")
+}
+
+// 직원별 쿠폰 할당
+model StaffCouponAllocation {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  couponId        String
+  coupon          Coupon   @relation(fields: [couponId], references: [id])
+
+  // 할당 수량
+  allocatedAmount Int      // 할당량
+  usedAmount      Int      @default(0) // 사용량
+
+  // 자동 갱신 설정
+  autoRefresh     Boolean  @default(false) // 자동 갱신 여부
+  refreshPeriod   String?  // 갱신 주기 (MONTHLY, WEEKLY, MANUAL)
+  lastRefreshedAt DateTime? // 마지막 갱신일
+
+  // 메모
+  note            String?  // 할당 메모
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([userId, couponId])
+  @@map("staff_coupon_allocations")
 }
 
 // 매출 집계 (캐시 테이블)

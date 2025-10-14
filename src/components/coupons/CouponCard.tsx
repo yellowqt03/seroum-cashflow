@@ -1,8 +1,9 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
-import { Ticket, Calendar, Users, TrendingUp, Edit, Trash2 } from 'lucide-react'
+import { Ticket, Calendar, Users, TrendingUp, Edit, Trash2, UserCog } from 'lucide-react'
 
 interface CouponCardProps {
   coupon: {
@@ -27,6 +28,12 @@ interface CouponCardProps {
 }
 
 export function CouponCard({ coupon, onEdit, onDelete, onToggleActive }: CouponCardProps) {
+  const router = useRouter()
+
+  const handleManageAllocations = () => {
+    router.push(`/coupons/${coupon.id}`)
+  }
+
   const getStatusBadge = () => {
     switch (coupon.status) {
       case 'active':
@@ -140,37 +147,48 @@ export function CouponCard({ coupon, onEdit, onDelete, onToggleActive }: CouponC
       </div>
 
       {/* 액션 버튼 */}
-      <div className="flex items-center gap-2">
-        {onEdit && (
-          <Button
-            onClick={() => onEdit(coupon.id)}
-            variant="outline"
-            size="sm"
-            className="flex-1"
-          >
-            <Edit className="h-4 w-4 mr-1" />
-            수정
-          </Button>
-        )}
-        {onToggleActive && (
-          <Button
-            onClick={() => onToggleActive(coupon.id, !coupon.isActive)}
-            variant={coupon.isActive ? 'outline' : 'primary'}
-            size="sm"
-            className="flex-1"
-          >
-            {coupon.isActive ? '비활성화' : '활성화'}
-          </Button>
-        )}
-        {onDelete && coupon.usedCount === 0 && (
-          <Button
-            onClick={() => onDelete(coupon.id)}
-            variant="outline"
-            size="sm"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        )}
+      <div className="space-y-2">
+        <Button
+          onClick={handleManageAllocations}
+          variant="primary"
+          size="sm"
+          className="w-full"
+        >
+          <UserCog className="h-4 w-4 mr-2" />
+          직원 할당 관리
+        </Button>
+        <div className="flex items-center gap-2">
+          {onEdit && (
+            <Button
+              onClick={() => onEdit(coupon.id)}
+              variant="outline"
+              size="sm"
+              className="flex-1"
+            >
+              <Edit className="h-4 w-4 mr-1" />
+              수정
+            </Button>
+          )}
+          {onToggleActive && (
+            <Button
+              onClick={() => onToggleActive(coupon.id, !coupon.isActive)}
+              variant={coupon.isActive ? 'outline' : 'primary'}
+              size="sm"
+              className="flex-1"
+            >
+              {coupon.isActive ? '비활성화' : '활성화'}
+            </Button>
+          )}
+          {onDelete && coupon.usedCount === 0 && (
+            <Button
+              onClick={() => onDelete(coupon.id)}
+              variant="outline"
+              size="sm"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   )
