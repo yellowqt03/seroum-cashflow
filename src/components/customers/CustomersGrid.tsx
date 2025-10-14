@@ -8,11 +8,13 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Customer, DISCOUNT_TYPES, CUSTOMER_SOURCES } from '@/lib/types'
+import { useToast } from '@/components/providers/ToastProvider'
 import { Search, Filter, UserPlus, Users, Crown, Gift, Briefcase, ChevronLeft, ChevronRight } from 'lucide-react'
 
 const ITEMS_PER_PAGE = 30
 
 export function CustomersGrid() {
+  const { showToast } = useToast()
   const [customers, setCustomers] = useState<Customer[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -64,8 +66,11 @@ export function CustomersGrid() {
       await fetchCustomers()
       setShowForm(false)
       setEditingCustomer(null)
+      showToast(editingCustomer ? '고객 정보가 수정되었습니다' : '고객이 등록되었습니다', 'success')
     } catch (err) {
-      setError(err instanceof Error ? err.message : '저장 중 오류가 발생했습니다.')
+      const errorMsg = err instanceof Error ? err.message : '저장 중 오류가 발생했습니다.'
+      setError(errorMsg)
+      showToast(errorMsg, 'error')
     } finally {
       setFormLoading(false)
     }
@@ -93,9 +98,9 @@ export function CustomersGrid() {
       }
 
       await fetchCustomers()
-      alert('고객이 삭제되었습니다.')
+      showToast('고객이 삭제되었습니다', 'success')
     } catch (err) {
-      alert(err instanceof Error ? err.message : '고객 삭제에 실패했습니다.')
+      showToast(err instanceof Error ? err.message : '고객 삭제에 실패했습니다', 'error')
     }
   }
 

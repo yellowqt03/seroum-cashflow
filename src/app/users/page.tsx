@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { useToast } from '@/components/providers/ToastProvider'
 import { Plus, Edit2, Trash2, Shield, UserCheck, UserX } from 'lucide-react'
 
 interface User {
@@ -126,13 +127,13 @@ export default function UsersPage() {
       const data = await res.json()
 
       if (!res.ok) {
-        alert(data.error || '직원 삭제에 실패했습니다.')
+        showToast(data.error || '직원 삭제에 실패했습니다.', 'error')
         return
       }
 
       fetchUsers()
     } catch (err) {
-      alert('삭제 중 오류가 발생했습니다.')
+      showToast('삭제 중 오류가 발생했습니다.', 'warning')
     }
   }
 

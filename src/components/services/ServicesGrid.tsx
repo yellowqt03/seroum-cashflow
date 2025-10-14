@@ -6,9 +6,11 @@ import { ServiceForm } from './ServiceForm'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Service, SERVICE_CATEGORIES } from '@/lib/types'
+import { useToast } from '@/components/providers/ToastProvider'
 import { Search, Filter, Plus } from 'lucide-react'
 
 export function ServicesGrid() {
+  const { showToast } = useToast()
   const [services, setServices] = useState<Service[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -51,8 +53,9 @@ export function ServicesGrid() {
 
       await fetchServices()
       setShowAddForm(false)
-      alert('서비스가 추가되었습니다.')
+      showToast('서비스가 추가되었습니다', 'success')
     } catch (err) {
+      showToast(err instanceof Error ? err.message : '서비스 추가에 실패했습니다', 'error')
       throw err
     }
   }
@@ -73,8 +76,9 @@ export function ServicesGrid() {
 
       await fetchServices()
       setEditingService(null)
-      alert('서비스가 수정되었습니다.')
+      showToast('서비스가 수정되었습니다', 'success')
     } catch (err) {
+      showToast(err instanceof Error ? err.message : '서비스 수정에 실패했습니다', 'error')
       throw err
     }
   }
@@ -91,9 +95,9 @@ export function ServicesGrid() {
       }
 
       await fetchServices()
-      alert('서비스가 삭제되었습니다.')
+      showToast('서비스가 삭제되었습니다', 'success')
     } catch (err) {
-      alert(err instanceof Error ? err.message : '서비스 삭제에 실패했습니다.')
+      showToast(err instanceof Error ? err.message : '서비스 삭제에 실패했습니다', 'error')
     }
   }
 

@@ -1,4 +1,5 @@
 'use client'
+import { useToast } from '@/components/providers/ToastProvider'
 
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
@@ -13,6 +14,7 @@ import { exportSalesReportToExcel, exportServiceRankingToExcel } from '@/lib/exc
 import { TrendingUp, Download, Calendar, BarChart3 } from 'lucide-react'
 
 export default function ReportsPage() {
+  const { showToast } = useToast()
   const [period, setPeriod] = useState('month')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
@@ -32,7 +34,7 @@ export default function ReportsPage() {
 
   const fetchReports = async () => {
     if (!startDate || !endDate) {
-      alert('시작일과 종료일을 선택해주세요.')
+      showToast('시작일과 종료일을 선택해주세요.', 'warning')
       return
     }
 
@@ -57,7 +59,7 @@ export default function ReportsPage() {
       }
     } catch (error) {
       console.error('리포트 조회 오류:', error)
-      alert('리포트를 불러오는 중 오류가 발생했습니다.')
+      showToast('리포트를 불러오는 중 오류가 발생했습니다.', 'warning')
     } finally {
       setLoading(false)
     }
@@ -72,7 +74,7 @@ export default function ReportsPage() {
 
   const handleExportSales = () => {
     if (!salesData) {
-      alert('내보낼 데이터가 없습니다.')
+      showToast('내보낼 데이터가 없습니다.', 'warning')
       return
     }
     const filename = `매출리포트_${startDate}_${endDate}.xlsx`
@@ -81,7 +83,7 @@ export default function ReportsPage() {
 
   const handleExportServices = () => {
     if (!servicesData) {
-      alert('내보낼 데이터가 없습니다.')
+      showToast('내보낼 데이터가 없습니다.', 'warning')
       return
     }
     const filename = `서비스판매순위_${startDate}_${endDate}.xlsx`
@@ -90,7 +92,7 @@ export default function ReportsPage() {
 
   const handleExportDiscounts = () => {
     if (!salesData) {
-      alert('내보낼 데이터가 없습니다.')
+      showToast('내보낼 데이터가 없습니다.', 'warning')
       return
     }
     const filename = `할인통계_${startDate}_${endDate}.csv`

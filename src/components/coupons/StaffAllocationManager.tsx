@@ -90,7 +90,7 @@ export function StaffAllocationManager({ couponId }: StaffAllocationManagerProps
         await fetchAllocations()
         await fetchStats()
         setShowForm(false)
-        alert('쿠폰이 할당되었습니다.')
+        showToast('쿠폰이 할당되었습니다.', 'warning')
       } else {
         const error = await response.json()
         throw new Error(error.error || '할당 실패')
@@ -127,7 +127,7 @@ export function StaffAllocationManager({ couponId }: StaffAllocationManagerProps
         await fetchStats()
         setShowForm(false)
         setEditingAllocation(undefined)
-        alert('할당이 수정되었습니다.')
+        showToast('할당이 수정되었습니다.', 'warning')
       } else {
         const error = await response.json()
         throw new Error(error.error || '수정 실패')
@@ -150,14 +150,14 @@ export function StaffAllocationManager({ couponId }: StaffAllocationManagerProps
       if (response.ok) {
         await fetchAllocations()
         await fetchStats()
-        alert('할당이 삭제되었습니다.')
+        showToast('할당이 삭제되었습니다.', 'warning')
       } else {
         const error = await response.json()
         alert(error.error || '삭제 실패')
       }
     } catch (error) {
       console.error('할당 삭제 오류:', error)
-      alert('삭제 중 오류가 발생했습니다.')
+      showToast('삭제 중 오류가 발생했습니다.', 'warning')
     }
   }
 
@@ -175,14 +175,14 @@ export function StaffAllocationManager({ couponId }: StaffAllocationManagerProps
       if (response.ok) {
         await fetchAllocations()
         await fetchStats()
-        alert('사용량이 초기화되었습니다.')
+        showToast('사용량이 초기화되었습니다.', 'warning')
       } else {
         const error = await response.json()
         alert(error.error || '초기화 실패')
       }
     } catch (error) {
       console.error('할당 초기화 오류:', error)
-      alert('초기화 중 오류가 발생했습니다.')
+      showToast('초기화 중 오류가 발생했습니다.', 'warning')
     }
   }
 
@@ -211,7 +211,7 @@ export function StaffAllocationManager({ couponId }: StaffAllocationManagerProps
       }
     } catch (error) {
       console.error('할당 조정 오류:', error)
-      alert('조정 중 오류가 발생했습니다.')
+      showToast('조정 중 오류가 발생했습니다.', 'warning')
     }
   }
 

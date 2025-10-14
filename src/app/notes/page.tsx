@@ -1,4 +1,5 @@
 'use client'
+import { useToast } from '@/components/providers/ToastProvider'
 
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
@@ -20,6 +21,7 @@ const currentYear = new Date().getFullYear()
 const years = Array.from({ length: 10 }, (_, i) => currentYear - i)
 
 export default function NotesPage() {
+  const { showToast } = useToast()
   const [notes, setNotes] = useState<MonthlyNote[]>([])
   const [filteredNotes, setFilteredNotes] = useState<MonthlyNote[]>([])
   const [loading, setLoading] = useState(true)
@@ -70,7 +72,7 @@ export default function NotesPage() {
           setShowForm(false)
           setEditingNote(null)
         } else {
-          alert('특이사항 수정에 실패했습니다.')
+          showToast('특이사항 수정에 실패했습니다.', 'warning')
         }
       } else {
         const response = await fetch('/api/monthly-notes', {
@@ -84,12 +86,12 @@ export default function NotesPage() {
           setShowForm(false)
         } else {
           const error = await response.json()
-          alert(error.error || '특이사항 저장에 실패했습니다.')
+          showToast(error.error || '특이사항 저장에 실패했습니다.', 'error')
         }
       }
     } catch (error) {
       console.error('특이사항 저장 오류:', error)
-      alert('특이사항 저장 중 오류가 발생했습니다.')
+      showToast('특이사항 저장 중 오류가 발생했습니다.', 'warning')
     }
   }
 
@@ -111,11 +113,11 @@ export default function NotesPage() {
       if (response.ok) {
         await fetchNotes()
       } else {
-        alert('특이사항 삭제에 실패했습니다.')
+        showToast('특이사항 삭제에 실패했습니다.', 'warning')
       }
     } catch (error) {
       console.error('특이사항 삭제 오류:', error)
-      alert('특이사항 삭제 중 오류가 발생했습니다.')
+      showToast('특이사항 삭제 중 오류가 발생했습니다.', 'warning')
     }
   }
 

@@ -1,4 +1,5 @@
 'use client'
+import { useToast } from '@/components/providers/ToastProvider'
 
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
@@ -38,6 +39,7 @@ interface DiscountApprovalRequest {
 }
 
 export default function ApprovalsPage() {
+  const { showToast } = useToast()
   const [requests, setRequests] = useState<DiscountApprovalRequest[]>([])
   const [filteredRequests, setFilteredRequests] = useState<DiscountApprovalRequest[]>([])
   const [loading, setLoading] = useState(true)
@@ -86,13 +88,13 @@ export default function ApprovalsPage() {
 
       if (response.ok) {
         await fetchRequests()
-        alert('할인이 승인되었습니다.')
+        showToast('할인이 승인되었습니다', 'success')
       } else {
-        alert('승인 처리에 실패했습니다.')
+        showToast('승인 처리에 실패했습니다.', 'warning')
       }
     } catch (error) {
       console.error('승인 처리 오류:', error)
-      alert('승인 처리 중 오류가 발생했습니다.')
+      showToast('승인 처리 중 오류가 발생했습니다.', 'warning')
     }
   }
 
@@ -113,13 +115,13 @@ export default function ApprovalsPage() {
 
       if (response.ok) {
         await fetchRequests()
-        alert('할인이 거부되었습니다.')
+        showToast('할인이 거부되었습니다', 'success')
       } else {
-        alert('거부 처리에 실패했습니다.')
+        showToast('거부 처리에 실패했습니다.', 'warning')
       }
     } catch (error) {
       console.error('거부 처리 오류:', error)
-      alert('거부 처리 중 오류가 발생했습니다.')
+      showToast('거부 처리 중 오류가 발생했습니다.', 'warning')
     }
   }
 

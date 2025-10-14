@@ -8,6 +8,7 @@ import { Select } from '@/components/ui/Select'
 import { Badge } from '@/components/ui/Badge'
 import { ORDER_STATUSES } from '@/lib/types'
 import { formatPrice } from '@/lib/utils'
+import { useToast } from '@/components/providers/ToastProvider'
 import {
   Plus,
   RefreshCw,
@@ -20,6 +21,7 @@ import {
 } from 'lucide-react'
 
 export function OrdersGrid() {
+  const { showToast } = useToast()
   const [orders, setOrders] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -72,9 +74,10 @@ export function OrdersGrid() {
 
       // 목록 새로고침
       await fetchOrders()
+      showToast('주문 상태가 업데이트되었습니다', 'success')
     } catch (error) {
       console.error('상태 업데이트 오류:', error)
-      alert('상태 업데이트에 실패했습니다.')
+      showToast('상태 업데이트에 실패했습니다', 'error')
     }
   }
 

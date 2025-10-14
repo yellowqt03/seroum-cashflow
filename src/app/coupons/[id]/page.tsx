@@ -1,4 +1,5 @@
 'use client'
+import { useToast } from '@/components/providers/ToastProvider'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -22,6 +23,7 @@ interface Coupon {
 }
 
 export default function CouponDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { showToast } = useToast()
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [coupon, setCoupon] = useState<Coupon | null>(null)

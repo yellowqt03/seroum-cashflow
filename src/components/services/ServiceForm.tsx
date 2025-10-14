@@ -47,7 +47,7 @@ export function ServiceForm({ service, onSubmit, onCancel }: ServiceFormProps) {
       })
     } catch (error) {
       console.error('서비스 저장 오류:', error)
-      alert('서비스 저장에 실패했습니다.')
+      showToast('서비스 저장에 실패했습니다.', 'warning')
     } finally {
       setIsSubmitting(false)
     }

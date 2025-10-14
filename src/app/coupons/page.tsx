@@ -1,4 +1,5 @@
 'use client'
+import { useToast } from '@/components/providers/ToastProvider'
 
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
@@ -26,6 +27,7 @@ interface Coupon {
 }
 
 export default function CouponsPage() {
+  const { showToast } = useToast()
   const [coupons, setCoupons] = useState<Coupon[]>([])
   const [filteredCoupons, setFilteredCoupons] = useState<Coupon[]>([])
   const [loading, setLoading] = useState(true)
@@ -89,7 +91,7 @@ export default function CouponsPage() {
       if (response.ok) {
         await fetchCoupons()
         setShowForm(false)
-        alert('쿠폰이 생성되었습니다.')
+        showToast('쿠폰이 생성되었습니다', 'success')
       } else {
         const error = await response.json()
         throw new Error(error.error || '쿠폰 생성 실패')
@@ -121,7 +123,7 @@ export default function CouponsPage() {
         await fetchCoupons()
         setShowForm(false)
         setEditingCoupon(undefined)
-        alert('쿠폰이 수정되었습니다.')
+        showToast('쿠폰이 수정되었습니다', 'success')
       } else {
         const error = await response.json()
         throw new Error(error.error || '쿠폰 수정 실패')
@@ -141,14 +143,14 @@ export default function CouponsPage() {
 
       if (response.ok) {
         await fetchCoupons()
-        alert('쿠폰이 삭제되었습니다.')
+        showToast('쿠폰이 삭제되었습니다', 'success')
       } else {
         const error = await response.json()
-        alert(error.error || '쿠폰 삭제 실패')
+        showToast(error.error || '쿠폰 삭제 실패', 'error')
       }
     } catch (error) {
       console.error('쿠폰 삭제 오류:', error)
-      alert('쿠폰 삭제 중 오류가 발생했습니다.')
+      showToast('쿠폰 삭제 중 오류가 발생했습니다.', 'warning')
     }
   }
 
@@ -162,14 +164,14 @@ export default function CouponsPage() {
 
       if (response.ok) {
         await fetchCoupons()
-        alert(`쿠폰이 ${isActive ? '활성화' : '비활성화'}되었습니다.`)
+        showToast(`쿠폰이 ${isActive ? '활성화' : '비활성화'}되었습니다`, 'success')
       } else {
         const error = await response.json()
-        alert(error.error || '쿠폰 상태 변경 실패')
+        showToast(error.error || '쿠폰 상태 변경 실패', 'error')
       }
     } catch (error) {
       console.error('쿠폰 상태 변경 오류:', error)
-      alert('쿠폰 상태 변경 중 오류가 발생했습니다.')
+      showToast('쿠폰 상태 변경 중 오류가 발생했습니다.', 'warning')
     }
   }
 

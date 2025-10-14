@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Customer } from '@/lib/types'
 import { calculateAdvancedDiscount, createDiscountApprovalRequest, OptimalDiscountOption } from '@/lib/discount'
+import { useToast } from '@/components/providers/ToastProvider'
 import { ArrowLeft, ArrowRight, Save, X, AlertTriangle } from 'lucide-react'
 
 interface ServiceItem {
@@ -26,6 +27,7 @@ interface OrderFormProps {
 }
 
 export function OrderForm({ onOrderSubmit, onCancel }: OrderFormProps) {
+  const { showToast } = useToast()
   const [step, setStep] = useState(1) // 1: 고객선택, 2: 서비스선택, 3: 확인/결제
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
   const [selectedServices, setSelectedServices] = useState<ServiceItem[]>([])
@@ -66,9 +68,10 @@ export function OrderForm({ onOrderSubmit, onCancel }: OrderFormProps) {
       const newCustomer = await response.json()
       setSelectedCustomer(newCustomer)
       setShowNewCustomerForm(false)
+      showToast('고객이 등록되었습니다', 'success')
     } catch (error) {
       console.error('고객 등록 오류:', error)
-      alert('고객 등록에 실패했습니다.')
+      showToast('고객 등록에 실패했습니다', 'error')
     } finally {
       setLoading(false)
     }
@@ -76,7 +79,7 @@ export function OrderForm({ onOrderSubmit, onCancel }: OrderFormProps) {
 
   const handleApprovalRequest = async () => {
     if (!selectedCustomer || selectedServices.length === 0) {
-      alert('고객과 서비스를 모두 선택해주세요.')
+      showToast('고객과 서비스를 모두 선택해주세요', 'warning')
       return
     }
 
@@ -145,7 +148,7 @@ export function OrderForm({ onOrderSubmit, onCancel }: OrderFormProps) {
         throw new Error('승인 요청에 실패했습니다.')
       }
 
-      alert('할인 승인 요청이 성공적으로 전송되었습니다. 관리자 승인을 기다려주세요.')
+      showToast('할인 승인 요청이 전송되었습니다', 'success')
 
       // 폼 초기화
       setSelectedCustomer(null)
@@ -156,7 +159,7 @@ export function OrderForm({ onOrderSubmit, onCancel }: OrderFormProps) {
 
     } catch (error) {
       console.error('승인 요청 오류:', error)
-      alert('승인 요청 중 오류가 발생했습니다.')
+      showToast('승인 요청 중 오류가 발생했습니다', 'error')
     } finally {
       setLoading(false)
     }
@@ -182,7 +185,7 @@ export function OrderForm({ onOrderSubmit, onCancel }: OrderFormProps) {
     })
 
     // 사용자에게 적용 완료 알림
-    alert(`최적 할인이 적용되었습니다! ${option.discountAmount.toLocaleString()}원 절약됩니다.`)
+    showToast(`최적 할인 적용! ${option.discountAmount.toLocaleString()}원 절약`, 'success')
   }
 
   const handleOrderSubmit = async () => {
@@ -220,7 +223,7 @@ export function OrderForm({ onOrderSubmit, onCancel }: OrderFormProps) {
       if (onOrderSubmit) {
         onOrderSubmit(order)
       } else {
-        alert('주문이 성공적으로 접수되었습니다!')
+        showToast('주문이 성공적으로 접수되었습니다', 'success')
         // 폼 초기화
         setSelectedCustomer(null)
         setSelectedServices([])
@@ -230,7 +233,7 @@ export function OrderForm({ onOrderSubmit, onCancel }: OrderFormProps) {
       }
     } catch (error) {
       console.error('주문 처리 오류:', error)
-      alert('주문 처리 중 오류가 발생했습니다.')
+      showToast('주문 처리 중 오류가 발생했습니다', 'error')
     } finally {
       setLoading(false)
     }

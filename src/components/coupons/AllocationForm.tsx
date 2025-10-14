@@ -65,12 +65,12 @@ export function AllocationForm({
     e.preventDefault()
 
     if (!formData.userId && !allocation) {
-      alert('직원을 선택해주세요.')
+      showToast('직원을 선택해주세요.', 'warning')
       return
     }
 
     if (formData.allocatedAmount <= 0) {
-      alert('할당량은 0보다 커야 합니다.')
+      showToast('할당량은 0보다 커야 합니다.', 'warning')
       return
     }
 
