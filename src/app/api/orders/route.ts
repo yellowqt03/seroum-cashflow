@@ -23,6 +23,7 @@ export async function GET(request: Request) {
       where,
       include: {
         customer: true,
+        appliedCoupon: true,
         orderItems: {
           include: {
             service: true
@@ -64,6 +65,46 @@ export async function POST(request: Request) {
         { error: '고객을 찾을 수 없습니다.' },
         { status: 404 }
       )
+    }
+
+    // 쿠폰 유효성 검증
+    let coupon = null
+    if (data.couponId) {
+      coupon = await prisma.coupon.findUnique({
+        where: { id: data.couponId }
+      })
+
+      if (!coupon) {
+        return NextResponse.json(
+          { error: '쿠폰을 찾을 수 없습니다.' },
+          { status: 404 }
+        )
+      }
+
+      // 쿠폰 활성 상태 확인
+      if (!coupon.isActive) {
+        return NextResponse.json(
+          { error: '사용할 수 없는 쿠폰입니다.' },
+          { status: 400 }
+        )
+      }
+
+      // 쿠폰 유효 기간 확인
+      const now = new Date()
+      if (now < new Date(coupon.validFrom) || now > new Date(coupon.validUntil)) {
+        return NextResponse.json(
+          { error: '쿠폰 사용 기간이 아닙니다.' },
+          { status: 400 }
+        )
+      }
+
+      // 쿠폰 사용 한도 확인
+      if (coupon.usageLimit && coupon.usedCount >= coupon.usageLimit) {
+        return NextResponse.json(
+          { error: '쿠폰 사용 한도를 초과했습니다.' },
+          { status: 400 }
+        )
+      }
     }
 
     // 서비스 정보 조회
@@ -125,7 +166,30 @@ export async function POST(request: Request) {
       })
     }
 
-    const finalAmount = totalSubtotal - totalDiscount
+    let subtotalAfterDiscount = totalSubtotal - totalDiscount
+
+    // 쿠폰 할인 계산
+    let couponDiscount = 0
+    if (coupon) {
+      if (coupon.discountType === 'PERCENT') {
+        couponDiscount = Math.floor(subtotalAfterDiscount * coupon.discountValue)
+        if (coupon.maxDiscount) {
+          couponDiscount = Math.min(couponDiscount, coupon.maxDiscount)
+        }
+      } else {
+        couponDiscount = coupon.discountValue
+      }
+
+      // 최소 주문 금액 확인
+      if (coupon.minAmount && subtotalAfterDiscount < coupon.minAmount) {
+        return NextResponse.json(
+          { error: `최소 주문금액 ${coupon.minAmount.toLocaleString()}원 이상이어야 합니다.` },
+          { status: 400 }
+        )
+      }
+    }
+
+    const finalAmount = subtotalAfterDiscount - couponDiscount
 
     // 트랜잭션으로 주문 생성
     const result = await prisma.$transaction(async (tx) => {
@@ -137,9 +201,11 @@ export async function POST(request: Request) {
           paymentMethod: data.paymentMethod,
           subtotal: totalSubtotal,
           discountAmount: totalDiscount,
+          couponDiscount: couponDiscount,
           finalAmount: finalAmount,
           appliedDiscountType: customer.discountType !== 'REGULAR' ? customer.discountType : null,
           discountRate: totalSubtotal > 0 ? totalDiscount / totalSubtotal : 0,
+          appliedCouponId: coupon?.id || null,
           notes: data.notes
         }
       })
@@ -175,6 +241,28 @@ export async function POST(request: Request) {
         }
       }
 
+      // 쿠폰 사용 처리
+      if (coupon) {
+        // 쿠폰 사용 이력 생성
+        await tx.couponUsage.create({
+          data: {
+            couponId: coupon.id,
+            customerId: customer.id,
+            orderId: order.id
+          }
+        })
+
+        // 쿠폰 사용 횟수 증가
+        await tx.coupon.update({
+          where: { id: coupon.id },
+          data: {
+            usedCount: {
+              increment: 1
+            }
+          }
+        })
+      }
+
       return order
     })
 
@@ -183,6 +271,7 @@ export async function POST(request: Request) {
       where: { id: result.id },
       include: {
         customer: true,
+        appliedCoupon: true,
         orderItems: {
           include: {
             service: true

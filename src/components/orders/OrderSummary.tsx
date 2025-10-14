@@ -1,13 +1,13 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Customer, DISCOUNT_TYPES, PAYMENT_METHODS } from '@/lib/types'
 import { calculateDiscount, simulateDiscount, calculateAdvancedDiscount, calculateOptimalDiscount, OptimalDiscountOption } from '@/lib/discount'
 import { formatPrice } from '@/lib/utils'
-import { Calculator, AlertTriangle, CheckCircle, CreditCard, Sparkles } from 'lucide-react'
+import { Calculator, AlertTriangle, CheckCircle, CreditCard, Sparkles, Tag } from 'lucide-react'
 
 interface ServiceItem {
   service: any
@@ -17,16 +17,47 @@ interface ServiceItem {
   totalPrice: number
 }
 
+interface Coupon {
+  id: string
+  name: string
+  discountType: string
+  discountValue: number
+  minAmount: number | null
+  maxDiscount: number | null
+}
+
 interface OrderSummaryProps {
   customer: Customer | null
   services: ServiceItem[]
+  selectedCouponId: string | null
   paymentMethod: string
   onPaymentMethodChange: (method: string) => void
   onApprovalRequest?: () => void
   onOptimalDiscountApply?: (option: OptimalDiscountOption, serviceIndex: number) => void
 }
 
-export function OrderSummary({ customer, services, paymentMethod, onPaymentMethodChange, onApprovalRequest, onOptimalDiscountApply }: OrderSummaryProps) {
+export function OrderSummary({ customer, services, selectedCouponId, paymentMethod, onPaymentMethodChange, onApprovalRequest, onOptimalDiscountApply }: OrderSummaryProps) {
+  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null)
+
+  useEffect(() => {
+    if (selectedCouponId) {
+      fetchCoupon(selectedCouponId)
+    } else {
+      setSelectedCoupon(null)
+    }
+  }, [selectedCouponId])
+
+  const fetchCoupon = async (couponId: string) => {
+    try {
+      const res = await fetch(`/api/coupons/${couponId}`)
+      if (res.ok) {
+        const data = await res.json()
+        setSelectedCoupon(data)
+      }
+    } catch (error) {
+      console.error('쿠폰 조회 오류:', error)
+    }
+  }
   const calculations = useMemo(() => {
     if (!customer || services.length === 0) {
       return null
@@ -65,7 +96,22 @@ export function OrderSummary({ customer, services, paymentMethod, onPaymentMetho
     const totalCustomerDiscount = serviceCalculations.reduce((sum, item) =>
       sum + item.calculation.customerDiscount, 0)
     const totalDiscount = totalPackageDiscount + totalCustomerDiscount
-    const finalAmount = totalOriginal - totalDiscount
+    const subtotalAfterDiscount = totalOriginal - totalDiscount
+
+    // 쿠폰 할인 계산
+    let couponDiscount = 0
+    if (selectedCoupon) {
+      if (selectedCoupon.discountType === 'PERCENT') {
+        couponDiscount = Math.floor(subtotalAfterDiscount * selectedCoupon.discountValue)
+        if (selectedCoupon.maxDiscount) {
+          couponDiscount = Math.min(couponDiscount, selectedCoupon.maxDiscount)
+        }
+      } else {
+        couponDiscount = selectedCoupon.discountValue
+      }
+    }
+
+    const finalAmount = subtotalAfterDiscount - couponDiscount
 
     // 중복 할인 감지 및 경고 메시지 수집
     const conflicts = serviceCalculations.flatMap(item => item.calculation.conflicts)
@@ -80,15 +126,16 @@ export function OrderSummary({ customer, services, paymentMethod, onPaymentMetho
         packageDiscount: totalPackageDiscount,
         customerDiscount: totalCustomerDiscount,
         totalDiscount: totalDiscount,
+        couponDiscount: couponDiscount,
         finalPrice: finalAmount,
-        discountRate: totalOriginal > 0 ? (totalDiscount / totalOriginal) : 0
+        discountRate: totalOriginal > 0 ? ((totalDiscount + couponDiscount) / totalOriginal) : 0
       },
       conflicts,
       hasConflicts,
       requiresApproval,
       canProceed
     }
-  }, [customer, services])
+  }, [customer, services, selectedCoupon])
 
   if (!customer) {
     return (
@@ -314,10 +361,25 @@ export function OrderSummary({ customer, services, paymentMethod, onPaymentMetho
                 </div>
               )}
 
-              {calculations.summary.totalDiscount > 0 && (
+              {calculations.summary.couponDiscount > 0 && (
+                <div className="flex justify-between items-center text-purple-600">
+                  <span className="flex items-center">
+                    <Tag className="h-3 w-3 mr-1" />
+                    쿠폰 할인
+                    {selectedCoupon && (
+                      <Badge variant="secondary" className="ml-2 text-xs">
+                        {selectedCoupon.name}
+                      </Badge>
+                    )}
+                  </span>
+                  <span>-{formatPrice(calculations.summary.couponDiscount)}</span>
+                </div>
+              )}
+
+              {(calculations.summary.totalDiscount + calculations.summary.couponDiscount) > 0 && (
                 <div className="flex justify-between border-t pt-2 text-gray-600">
                   <span>총 할인 금액</span>
-                  <span>-{formatPrice(calculations.summary.totalDiscount)}</span>
+                  <span>-{formatPrice(calculations.summary.totalDiscount + calculations.summary.couponDiscount)}</span>
                 </div>
               )}
 

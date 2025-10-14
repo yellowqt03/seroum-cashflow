@@ -115,11 +115,16 @@ model Order {
   // 금액 정보
   subtotal      Int           // 소계 (할인 전)
   discountAmount Int          @default(0) // 할인 금액
+  couponDiscount Int          @default(0) // 쿠폰 할인 금액
   finalAmount   Int           // 최종 결제 금액
 
   // 할인 정보
   appliedDiscountType String?       // 적용된 할인 유형 (VIP, BIRTHDAY, EMPLOYEE)
   discountRate       Float?         // 적용된 할인율 (0.1 = 10%)
+
+  // 쿠폰 정보
+  appliedCouponId String?      // 적용된 쿠폰 ID
+  appliedCoupon   Coupon?      @relation(fields: [appliedCouponId], references: [id])
 
   // 부가 정보
   notes         String?       // 특이사항
@@ -193,6 +198,7 @@ model Coupon {
 
   couponUsages CouponUsage[]
   staffAllocations StaffCouponAllocation[]
+  orders Order[]
 
   @@map("coupons")
 }

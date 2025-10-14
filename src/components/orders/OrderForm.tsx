@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { CustomerSelector } from './CustomerSelector'
 import { ServiceSelector } from './ServiceSelector'
 import { OrderSummary } from './OrderSummary'
+import CouponSelector from './CouponSelector'
 import { CustomerForm, CustomerFormData } from '../customers/CustomerForm'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -28,6 +29,7 @@ export function OrderForm({ onOrderSubmit, onCancel }: OrderFormProps) {
   const [step, setStep] = useState(1) // 1: 고객선택, 2: 서비스선택, 3: 확인/결제
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
   const [selectedServices, setSelectedServices] = useState<ServiceItem[]>([])
+  const [selectedCouponId, setSelectedCouponId] = useState<string | null>(null)
   const [paymentMethod, setPaymentMethod] = useState<string>('CARD')
   const [notes, setNotes] = useState<string>('')
   const [showNewCustomerForm, setShowNewCustomerForm] = useState(false)
@@ -193,6 +195,7 @@ export function OrderForm({ onOrderSubmit, onCancel }: OrderFormProps) {
         customerId: selectedCustomer.id,
         paymentMethod,
         notes: notes || null,
+        couponId: selectedCouponId,
         items: selectedServices.map(item => ({
           serviceId: item.service.id,
           quantity: item.quantity,
@@ -302,6 +305,16 @@ export function OrderForm({ onOrderSubmit, onCancel }: OrderFormProps) {
                 <h3 className="text-lg font-semibold mb-4">주문 확인</h3>
 
                 <div className="space-y-4">
+                  {/* 쿠폰 선택 */}
+                  {selectedCustomer && (
+                    <CouponSelector
+                      customerId={selectedCustomer.id}
+                      subtotal={selectedServices.reduce((sum, item) => sum + item.totalPrice, 0)}
+                      selectedCouponId={selectedCouponId}
+                      onSelectCoupon={setSelectedCouponId}
+                    />
+                  )}
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       특이사항 (선택)
@@ -325,6 +338,7 @@ export function OrderForm({ onOrderSubmit, onCancel }: OrderFormProps) {
           <OrderSummary
             customer={selectedCustomer}
             services={selectedServices}
+            selectedCouponId={selectedCouponId}
             paymentMethod={paymentMethod}
             onPaymentMethodChange={setPaymentMethod}
             onApprovalRequest={handleApprovalRequest}
