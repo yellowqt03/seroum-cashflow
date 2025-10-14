@@ -6,9 +6,9 @@ import { DashboardOverview } from '@/components/dashboard/DashboardOverview'
 
 export default function DashboardPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-50">
       {/* 헤더 */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-4">
@@ -23,13 +23,13 @@ export default function DashboardPage() {
               </h1>
             </div>
             <nav className="hidden md:flex space-x-6">
-              <Link href="/services" className="text-gray-600 hover:text-blue-600 transition-colors">
+              <Link href="/services" className="text-gray-600 hover:text-slate-900 transition-colors">
                 서비스 관리
               </Link>
-              <Link href="/customers" className="text-gray-600 hover:text-blue-600 transition-colors">
+              <Link href="/customers" className="text-gray-600 hover:text-slate-900 transition-colors">
                 고객 관리
               </Link>
-              <Link href="/orders" className="text-gray-600 hover:text-blue-600 transition-colors">
+              <Link href="/orders" className="text-gray-600 hover:text-slate-900 transition-colors">
                 주문 관리
               </Link>
             </nav>
@@ -52,10 +52,10 @@ export default function DashboardPage() {
         {/* 빠른 액션 카드 */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <Link href="/orders" className="group">
-            <div className="bg-white p-6 rounded-lg border border-gray-200 hover:shadow-md transition-all group-hover:scale-105">
+            <div className="bg-white p-6 rounded-lg border border-slate-200 hover:shadow-md transition-all group-hover:scale-105">
               <div className="flex items-center space-x-3">
                 <div className="bg-blue-100 p-2 rounded-lg">
-                  <ShoppingBag className="h-6 w-6 text-blue-600" />
+                  <ShoppingBag className="h-6 w-6 text-slate-900" />
                 </div>
                 <div>
                   <h3 className="font-medium text-gray-900">새 주문</h3>
@@ -66,10 +66,10 @@ export default function DashboardPage() {
           </Link>
 
           <Link href="/customers" className="group">
-            <div className="bg-white p-6 rounded-lg border border-gray-200 hover:shadow-md transition-all group-hover:scale-105">
+            <div className="bg-white p-6 rounded-lg border border-slate-200 hover:shadow-md transition-all group-hover:scale-105">
               <div className="flex items-center space-x-3">
                 <div className="bg-green-100 p-2 rounded-lg">
-                  <Users className="h-6 w-6 text-green-600" />
+                  <Users className="h-6 w-6 text-slate-900" />
                 </div>
                 <div>
                   <h3 className="font-medium text-gray-900">고객 등록</h3>
@@ -80,10 +80,10 @@ export default function DashboardPage() {
           </Link>
 
           <Link href="/services" className="group">
-            <div className="bg-white p-6 rounded-lg border border-gray-200 hover:shadow-md transition-all group-hover:scale-105">
+            <div className="bg-white p-6 rounded-lg border border-slate-200 hover:shadow-md transition-all group-hover:scale-105">
               <div className="flex items-center space-x-3">
                 <div className="bg-purple-100 p-2 rounded-lg">
-                  <BarChart3 className="h-6 w-6 text-purple-600" />
+                  <BarChart3 className="h-6 w-6 text-slate-900" />
                 </div>
                 <div>
                   <h3 className="font-medium text-gray-900">서비스 관리</h3>
@@ -94,7 +94,7 @@ export default function DashboardPage() {
           </Link>
 
           <Link href="/reports" className="group">
-            <div className="bg-white p-6 rounded-lg border border-gray-200 hover:shadow-md transition-all group-hover:scale-105">
+            <div className="bg-white p-6 rounded-lg border border-slate-200 hover:shadow-md transition-all group-hover:scale-105">
               <div className="flex items-center space-x-3">
                 <div className="bg-yellow-100 p-2 rounded-lg">
                   <Settings className="h-6 w-6 text-yellow-600" />

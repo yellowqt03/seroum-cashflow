@@ -150,7 +150,7 @@ export function ServiceForm({ service, onSubmit, onCancel }: ServiceFormProps) {
                 설명
               </label>
               <textarea
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="서비스 설명"
@@ -212,7 +212,7 @@ export function ServiceForm({ service, onSubmit, onCancel }: ServiceFormProps) {
                   type="checkbox"
                   checked={formData.allowWhiteJade}
                   onChange={(e) => setFormData({ ...formData, allowWhiteJade: e.target.checked })}
-                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  className="w-4 h-4 text-slate-900 border-gray-300 rounded focus:ring-slate-900"
                 />
                 <span className="text-sm text-gray-700">백옥 가능</span>
               </label>
@@ -222,7 +222,7 @@ export function ServiceForm({ service, onSubmit, onCancel }: ServiceFormProps) {
                   type="checkbox"
                   checked={formData.allowWhiteJadeDouble}
                   onChange={(e) => setFormData({ ...formData, allowWhiteJadeDouble: e.target.checked })}
-                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  className="w-4 h-4 text-slate-900 border-gray-300 rounded focus:ring-slate-900"
                 />
                 <span className="text-sm text-gray-700">백옥더블 가능</span>
               </label>
@@ -232,7 +232,7 @@ export function ServiceForm({ service, onSubmit, onCancel }: ServiceFormProps) {
                   type="checkbox"
                   checked={formData.allowThymus}
                   onChange={(e) => setFormData({ ...formData, allowThymus: e.target.checked })}
-                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  className="w-4 h-4 text-slate-900 border-gray-300 rounded focus:ring-slate-900"
                 />
                 <span className="text-sm text-gray-700">가슴샘 가능</span>
               </label>
@@ -242,7 +242,7 @@ export function ServiceForm({ service, onSubmit, onCancel }: ServiceFormProps) {
                   type="checkbox"
                   checked={formData.allowPowerShot}
                   onChange={(e) => setFormData({ ...formData, allowPowerShot: e.target.checked })}
-                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  className="w-4 h-4 text-slate-900 border-gray-300 rounded focus:ring-slate-900"
                 />
                 <span className="text-sm text-gray-700">강력주사 가능</span>
               </label>

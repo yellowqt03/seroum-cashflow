@@ -141,7 +141,7 @@ export function CustomersGrid() {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="bg-white rounded-lg border border-gray-200 p-6 animate-pulse">
+          <div key={i} className="bg-white rounded-lg border border-slate-200 p-6 animate-pulse">
             <div className="h-6 bg-gray-200 rounded mb-4"></div>
             <div className="h-4 bg-gray-200 rounded mb-2"></div>
             <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
@@ -177,17 +177,17 @@ export function CustomersGrid() {
 
       {/* 통계 카드 */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
+        <div className="bg-white p-4 rounded-lg border border-slate-200">
           <div className="flex items-center space-x-2">
-            <Users className="h-5 w-5 text-blue-600" />
+            <Users className="h-5 w-5 text-slate-900" />
             <div>
-              <div className="text-2xl font-bold text-blue-600">{stats.total}</div>
+              <div className="text-2xl font-bold text-slate-900">{stats.total}</div>
               <div className="text-sm text-gray-600">전체 고객</div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
+        <div className="bg-white p-4 rounded-lg border border-slate-200">
           <div className="flex items-center space-x-2">
             <Crown className="h-5 w-5 text-yellow-600" />
             <div>
@@ -197,7 +197,7 @@ export function CustomersGrid() {
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
+        <div className="bg-white p-4 rounded-lg border border-slate-200">
           <div className="flex items-center space-x-2">
             <Gift className="h-5 w-5 text-pink-600" />
             <div>
@@ -207,11 +207,11 @@ export function CustomersGrid() {
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
+        <div className="bg-white p-4 rounded-lg border border-slate-200">
           <div className="flex items-center space-x-2">
-            <Briefcase className="h-5 w-5 text-blue-600" />
+            <Briefcase className="h-5 w-5 text-slate-900" />
             <div>
-              <div className="text-2xl font-bold text-blue-600">{stats.employee}</div>
+              <div className="text-2xl font-bold text-slate-900">{stats.employee}</div>
               <div className="text-sm text-gray-600">직원 할인</div>
             </div>
           </div>
@@ -219,7 +219,7 @@ export function CustomersGrid() {
       </div>
 
       {/* 필터링 및 검색 */}
-      <div className="bg-white p-6 rounded-lg border border-gray-200">
+      <div className="bg-white p-6 rounded-lg border border-slate-200">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* 검색 */}
           <div className="relative">
@@ -274,7 +274,7 @@ export function CustomersGrid() {
 
       {/* 페이지네이션 */}
       {totalPages > 1 && (
-        <div className="sticky bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-lg -mx-6 px-6 py-4 mt-6">
+        <div className="sticky bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-lg -mx-6 px-6 py-4 mt-6">
           <div className="flex items-center justify-between max-w-7xl mx-auto">
             <div className="text-sm text-gray-600">
               {startIndex + 1}-{Math.min(endIndex, filteredCustomers.length)} / {filteredCustomers.length}명

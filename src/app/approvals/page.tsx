@@ -151,7 +151,7 @@ export default function ApprovalsPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
-          <Shield className="h-8 w-8 text-blue-600" />
+          <Shield className="h-8 w-8 text-slate-900" />
           <div>
             <h1 className="text-3xl font-bold text-gray-900">할인 승인 관리</h1>
             <p className="text-gray-600 mt-1">중복 할인 요청을 검토하고 승인/거부합니다</p>
@@ -192,10 +192,10 @@ export default function ApprovalsPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">승인 완료</p>
-              <p className="text-2xl font-bold text-green-600">{stats.approved}</p>
+              <p className="text-2xl font-bold text-slate-900">{stats.approved}</p>
             </div>
             <div className="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <CheckCircle className="h-6 w-6 text-green-600" />
+              <CheckCircle className="h-6 w-6 text-slate-900" />
             </div>
           </div>
         </div>

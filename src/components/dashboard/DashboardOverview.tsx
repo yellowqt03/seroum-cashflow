@@ -105,7 +105,7 @@ export function DashboardOverview() {
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-white rounded-lg border border-gray-200 p-6 animate-pulse">
+            <div key={i} className="bg-white rounded-lg border border-slate-200 p-6 animate-pulse">
               <div className="h-4 bg-gray-200 rounded mb-2"></div>
               <div className="h-8 bg-gray-200 rounded mb-2"></div>
               <div className="h-4 bg-gray-200 rounded w-2/3"></div>
@@ -114,7 +114,7 @@ export function DashboardOverview() {
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className="bg-white rounded-lg border border-gray-200 p-6 animate-pulse">
+            <div key={i} className="bg-white rounded-lg border border-slate-200 p-6 animate-pulse">
               <div className="h-6 bg-gray-200 rounded mb-4"></div>
               <div className="space-y-3">
                 {Array.from({ length: 5 }).map((_, j) => (
@@ -194,7 +194,7 @@ export function DashboardOverview() {
               {stats.topServices.map((service, index) => (
                 <div key={service.name} className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-medium">
+                    <div className="w-8 h-8 bg-blue-100 text-slate-900 rounded-full flex items-center justify-center text-sm font-medium">
                       {index + 1}
                     </div>
                     <div>
@@ -247,7 +247,7 @@ export function DashboardOverview() {
                   <Briefcase className="h-4 w-4 text-blue-500" />
                   <span>직원 할인</span>
                 </div>
-                <Badge className="bg-blue-100 text-blue-800">{stats.customerBreakdown.employee}명</Badge>
+                <Badge className="bg-blue-100 text-slate-900">{stats.customerBreakdown.employee}명</Badge>
               </div>
             </div>
           </CardContent>
@@ -265,7 +265,7 @@ export function DashboardOverview() {
         <CardContent>
           <div className="space-y-4">
             {stats.recentOrders.map((order) => (
-              <div key={order.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div key={order.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
                 <div className="flex items-center space-x-4">
                   <div>
                     <div className="font-medium">{order.customerName}</div>

@@ -164,7 +164,7 @@ export function CustomerForm({ customer, onSubmit, onCancel, loading = false }: 
                 name="isVip"
                 checked={formData.isVip}
                 onChange={handleInputChange('isVip')}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-slate-900 focus:ring-slate-900 border-gray-300 rounded"
               />
               <label htmlFor="isVip" className="text-sm font-medium text-gray-700">
                 VIP 고객
@@ -174,9 +174,9 @@ export function CustomerForm({ customer, onSubmit, onCancel, loading = false }: 
 
           {/* 할인 안내 */}
           {formData.discountType !== 'REGULAR' && (
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <h4 className="text-sm font-medium text-blue-800 mb-2">할인 혜택 안내</h4>
-              <div className="text-sm text-blue-600">
+            <div className="bg-slate-50 p-4 rounded-lg">
+              <h4 className="text-sm font-medium text-slate-900 mb-2">할인 혜택 안내</h4>
+              <div className="text-sm text-slate-900">
                 {formData.discountType === 'VIP' && (
                   <p>• VIP 전용 서비스 무료 이용</p>
                 )}

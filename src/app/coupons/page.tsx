@@ -207,7 +207,7 @@ export default function CouponsPage() {
       {/* 헤더 */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
-          <Ticket className="h-8 w-8 text-purple-600" />
+          <Ticket className="h-8 w-8 text-slate-900" />
           <div>
             <h1 className="text-3xl font-bold text-gray-900">쿠폰 관리</h1>
             <p className="text-gray-600 mt-1">할인 쿠폰을 생성하고 관리합니다</p>
@@ -228,7 +228,7 @@ export default function CouponsPage() {
               <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
             </div>
             <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Ticket className="h-6 w-6 text-purple-600" />
+              <Ticket className="h-6 w-6 text-slate-900" />
             </div>
           </div>
         </div>
@@ -237,10 +237,10 @@ export default function CouponsPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">활성 쿠폰</p>
-              <p className="text-2xl font-bold text-green-600">{stats.active}</p>
+              <p className="text-2xl font-bold text-slate-900">{stats.active}</p>
             </div>
             <div className="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <Ticket className="h-6 w-6 text-green-600" />
+              <Ticket className="h-6 w-6 text-slate-900" />
             </div>
           </div>
         </div>
@@ -261,10 +261,10 @@ export default function CouponsPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">총 사용 횟수</p>
-              <p className="text-2xl font-bold text-blue-600">{stats.totalUsage}</p>
+              <p className="text-2xl font-bold text-slate-900">{stats.totalUsage}</p>
             </div>
             <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <TrendingUp className="h-6 w-6 text-blue-600" />
+              <TrendingUp className="h-6 w-6 text-slate-900" />
             </div>
           </div>
         </div>

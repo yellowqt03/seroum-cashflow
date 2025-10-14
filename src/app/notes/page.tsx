@@ -141,7 +141,7 @@ export default function NotesPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
-          <FileText className="h-8 w-8 text-blue-600" />
+          <FileText className="h-8 w-8 text-slate-900" />
           <div>
             <h1 className="text-3xl font-bold text-gray-900">월별 특이사항 관리</h1>
             <p className="text-gray-600 mt-1">매월 발생한 특이사항을 기록하고 관리합니다</p>

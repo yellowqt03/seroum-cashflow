@@ -125,7 +125,7 @@ export function ExcelUpload({ onUploadComplete }: ExcelUploadProps) {
             {/* 헤더 */}
             <div className="flex items-center justify-between p-6 border-b">
               <div className="flex items-center gap-3">
-                <FileSpreadsheet className="h-6 w-6 text-green-600" />
+                <FileSpreadsheet className="h-6 w-6 text-slate-900" />
                 <h2 className="text-xl font-semibold text-gray-900">매출 데이터 업로드</h2>
               </div>
               <button
@@ -139,9 +139,9 @@ export function ExcelUpload({ onUploadComplete }: ExcelUploadProps) {
             {/* 내용 */}
             <div className="p-6 space-y-6">
               {/* 안내 메시지 */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
                 <h3 className="font-medium text-blue-900 mb-2">📋 업로드 가이드</h3>
-                <ul className="text-sm text-blue-800 space-y-1">
+                <ul className="text-sm text-slate-900 space-y-1">
                   <li>• Excel 파일(.xls, .xlsx)을 업로드할 수 있습니다.</li>
                   <li>• 필수 항목: 날짜, 서비스명, 수량, 단가</li>
                   <li>• 선택 항목: 총액, 고객명, 결제방법, 비고</li>
@@ -168,10 +168,10 @@ export function ExcelUpload({ onUploadComplete }: ExcelUploadProps) {
                     type="file"
                     accept=".xls,.xlsx"
                     onChange={handleFileSelect}
-                    className="flex-1 text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    className="flex-1 text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-slate-50 file:text-slate-900 hover:file:bg-blue-100"
                   />
                   {file && (
-                    <span className="text-sm text-green-600 flex items-center gap-1">
+                    <span className="text-sm text-slate-900 flex items-center gap-1">
                       <CheckCircle className="h-4 w-4" />
                       {file.name}
                     </span>
@@ -192,7 +192,7 @@ export function ExcelUpload({ onUploadComplete }: ExcelUploadProps) {
 
               {/* 업로드 결과 */}
               {result && (
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
                   <h3 className="font-medium text-gray-900 mb-3">업로드 결과</h3>
                   <div className="grid grid-cols-3 gap-4 mb-3">
                     <div className="text-center">
@@ -200,7 +200,7 @@ export function ExcelUpload({ onUploadComplete }: ExcelUploadProps) {
                       <p className="text-xs text-gray-600">전체</p>
                     </div>
                     <div className="text-center">
-                      <p className="text-2xl font-bold text-green-600">{result.success}</p>
+                      <p className="text-2xl font-bold text-slate-900">{result.success}</p>
                       <p className="text-xs text-gray-600">성공</p>
                     </div>
                     <div className="text-center">

@@ -80,7 +80,7 @@ export function OrderCard({ order, onStatusUpdate, onViewDetails }: OrderCardPro
           </div>
 
           <div className="text-right">
-            <div className="text-xl font-bold text-blue-600">
+            <div className="text-xl font-bold text-slate-900">
               {formatPrice(order.finalAmount)}
             </div>
             {discountApplied && (

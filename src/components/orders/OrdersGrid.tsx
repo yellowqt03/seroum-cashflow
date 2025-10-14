@@ -109,7 +109,7 @@ export function OrdersGrid() {
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-white rounded-lg border border-gray-200 p-6 animate-pulse">
+            <div key={i} className="bg-white rounded-lg border border-slate-200 p-6 animate-pulse">
               <div className="h-8 bg-gray-200 rounded mb-2"></div>
               <div className="h-4 bg-gray-200 rounded"></div>
             </div>
@@ -117,7 +117,7 @@ export function OrdersGrid() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="bg-white rounded-lg border border-gray-200 p-6 animate-pulse">
+            <div key={i} className="bg-white rounded-lg border border-slate-200 p-6 animate-pulse">
               <div className="h-6 bg-gray-200 rounded mb-4"></div>
               <div className="space-y-2">
                 <div className="h-4 bg-gray-200 rounded"></div>
@@ -166,17 +166,17 @@ export function OrdersGrid() {
 
       {/* 통계 카드 */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
+        <div className="bg-white p-4 rounded-lg border border-slate-200">
           <div className="flex items-center space-x-2">
-            <ShoppingBag className="h-5 w-5 text-blue-600" />
+            <ShoppingBag className="h-5 w-5 text-slate-900" />
             <div>
-              <div className="text-2xl font-bold text-blue-600">{stats.total}</div>
+              <div className="text-2xl font-bold text-slate-900">{stats.total}</div>
               <div className="text-sm text-gray-600">전체 주문</div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
+        <div className="bg-white p-4 rounded-lg border border-slate-200">
           <div className="flex items-center space-x-2">
             <Clock className="h-5 w-5 text-yellow-600" />
             <div>
@@ -186,31 +186,31 @@ export function OrdersGrid() {
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
+        <div className="bg-white p-4 rounded-lg border border-slate-200">
           <div className="flex items-center space-x-2">
-            <Clock className="h-5 w-5 text-blue-600" />
+            <Clock className="h-5 w-5 text-slate-900" />
             <div>
-              <div className="text-2xl font-bold text-blue-600">{stats.inProgress}</div>
+              <div className="text-2xl font-bold text-slate-900">{stats.inProgress}</div>
               <div className="text-sm text-gray-600">진행 중</div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
+        <div className="bg-white p-4 rounded-lg border border-slate-200">
           <div className="flex items-center space-x-2">
-            <CheckCircle className="h-5 w-5 text-green-600" />
+            <CheckCircle className="h-5 w-5 text-slate-900" />
             <div>
-              <div className="text-2xl font-bold text-green-600">{stats.completed}</div>
+              <div className="text-2xl font-bold text-slate-900">{stats.completed}</div>
               <div className="text-sm text-gray-600">완료</div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
+        <div className="bg-white p-4 rounded-lg border border-slate-200">
           <div className="flex items-center space-x-2">
-            <DollarSign className="h-5 w-5 text-green-600" />
+            <DollarSign className="h-5 w-5 text-slate-900" />
             <div>
-              <div className="text-xl font-bold text-green-600">
+              <div className="text-xl font-bold text-slate-900">
                 {formatPrice(stats.totalRevenue)}
               </div>
               <div className="text-sm text-gray-600">완료 매출</div>
@@ -220,7 +220,7 @@ export function OrdersGrid() {
       </div>
 
       {/* 필터링 */}
-      <div className="bg-white p-4 rounded-lg border border-gray-200">
+      <div className="bg-white p-4 rounded-lg border border-slate-200">
         <div className="flex items-center space-x-4">
           <Filter className="h-4 w-4 text-gray-400" />
           <Select

@@ -75,13 +75,13 @@ export function CouponCard({ coupon, onEdit, onDelete, onToggleActive }: CouponC
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-start gap-3 flex-1">
           <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-            <Ticket className="h-6 w-6 text-purple-600" />
+            <Ticket className="h-6 w-6 text-slate-900" />
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="text-lg font-semibold text-gray-900 mb-1 truncate">
               {coupon.name}
             </h3>
-            <p className="text-2xl font-bold text-purple-600">
+            <p className="text-2xl font-bold text-slate-900">
               {getDiscountText()}
             </p>
           </div>

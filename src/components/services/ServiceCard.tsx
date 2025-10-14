@@ -87,7 +87,7 @@ export function ServiceCard({ service, onEdit, onDelete, onSelect, isSelected = 
         {/* 가격 정보 */}
         <div className="flex items-center space-x-2 text-sm">
           <DollarSign className="h-4 w-4 text-gray-500" />
-          <span className="font-semibold text-lg text-blue-600">
+          <span className="font-semibold text-lg text-slate-900">
             {formatPrice(service.price)}
           </span>
         </div>

@@ -166,7 +166,7 @@ export function ServiceSelector({ selectedServices, onServiceChange }: ServiceSe
               <ShoppingCart className="h-5 w-5 mr-2" />
               선택된 서비스 ({totalItems}개)
             </span>
-            <div className="text-xl font-bold text-blue-600">
+            <div className="text-xl font-bold text-slate-900">
               {formatPrice(totalAmount)}
             </div>
           </CardTitle>
@@ -179,7 +179,7 @@ export function ServiceSelector({ selectedServices, onServiceChange }: ServiceSe
           ) : (
             <div className="space-y-4">
               {selectedServices.map((item, index) => (
-                <div key={`${item.service.id}-${item.packageType}`} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div key={`${item.service.id}-${item.packageType}`} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
                   <div className="flex-1">
                     <div className="font-medium">{item.service.name}</div>
                     <div className="text-sm text-gray-600">
@@ -263,7 +263,7 @@ export function ServiceSelector({ selectedServices, onServiceChange }: ServiceSe
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {filteredServices.map((service) => (
-                <div key={service.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div key={service.id} className="border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                   <div className="flex justify-between items-start mb-3">
                     <div>
                       <h4 className="font-medium text-lg">{service.name}</h4>

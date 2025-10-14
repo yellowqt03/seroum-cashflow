@@ -39,7 +39,7 @@ export function TopServicesTable({ services, title = "서비스별 판매 순위
 
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gray-50">
+          <thead className="bg-slate-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 순위
@@ -69,7 +69,7 @@ export function TopServicesTable({ services, title = "서비스별 판매 순위
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {services.map((service, index) => (
-              <tr key={index} className="hover:bg-gray-50 transition-colors">
+              <tr key={index} className="hover:bg-slate-50 transition-colors">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
                     <span className={`
@@ -87,7 +87,7 @@ export function TopServicesTable({ services, title = "서비스별 판매 순위
                   <div className="text-sm font-medium text-gray-900">{service.serviceName}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                  <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-slate-900">
                     {getCategoryName(service.category)}
                   </span>
                 </td>

@@ -183,7 +183,7 @@ export function OrderSummary({ customer, services, selectedCouponId, paymentMeth
       </CardHeader>
       <CardContent className="space-y-6">
         {/* 고객 정보 요약 */}
-        <div className="bg-gray-50 p-4 rounded-lg">
+        <div className="bg-slate-50 p-4 rounded-lg">
           <div className="flex items-center justify-between mb-2">
             <span className="font-medium">{customer.name}</span>
             <Badge variant={customer.discountType === 'VIP' ? 'default' : 'secondary'}>
@@ -231,7 +231,7 @@ export function OrderSummary({ customer, services, selectedCouponId, paymentMeth
         {calculations?.requiresApproval && (
           <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
             <div className="flex items-center space-x-2 mb-2">
-              <AlertTriangle className="h-5 w-5 text-orange-600" />
+              <AlertTriangle className="h-5 w-5 text-slate-900" />
               <span className="font-medium text-orange-800">관리자 승인이 필요합니다</span>
             </div>
             <p className="text-sm text-orange-700 mb-3">
@@ -254,7 +254,7 @@ export function OrderSummary({ customer, services, selectedCouponId, paymentMeth
           <div className="space-y-3">
             <h4 className="font-medium text-gray-900">서비스별 할인 내역</h4>
             {calculations.serviceCalculations.map((item, index) => (
-              <div key={index} className="border border-gray-200 rounded-lg p-4">
+              <div key={index} className="border border-slate-200 rounded-lg p-4">
                 <div className="flex justify-between items-start mb-2">
                   <div>
                     <div className="font-medium">{item.service.name}</div>
@@ -268,7 +268,7 @@ export function OrderSummary({ customer, services, selectedCouponId, paymentMeth
                         {formatPrice(item.calculation.originalPrice)}
                       </div>
                     )}
-                    <div className="font-medium text-blue-600">
+                    <div className="font-medium text-slate-900">
                       {formatPrice(item.calculation.finalPrice)}
                     </div>
                   </div>
@@ -278,7 +278,7 @@ export function OrderSummary({ customer, services, selectedCouponId, paymentMeth
                 {item.optimalCalculation && item.optimalCalculation.bestOption.discountAmount > 0 && (
                   <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
                     <div className="flex items-center gap-2 mb-2">
-                      <Sparkles className="h-4 w-4 text-green-600" />
+                      <Sparkles className="h-4 w-4 text-slate-900" />
                       <span className="text-sm font-medium text-green-800">💡 더 저렴한 옵션이 있어요!</span>
                     </div>
                     <div className="text-sm text-green-700 mb-2">
@@ -312,13 +312,13 @@ export function OrderSummary({ customer, services, selectedCouponId, paymentMeth
                 {(item.calculation.packageDiscount > 0 || item.calculation.customerDiscount > 0) && (
                   <div className="space-y-1 text-sm">
                     {item.calculation.packageDiscount > 0 && (
-                      <div className="flex justify-between text-green-600">
+                      <div className="flex justify-between text-slate-900">
                         <span>패키지 할인</span>
                         <span>-{formatPrice(item.calculation.packageDiscount)}</span>
                       </div>
                     )}
                     {item.calculation.customerDiscount > 0 && (
-                      <div className="flex justify-between text-blue-600">
+                      <div className="flex justify-between text-slate-900">
                         <span>
                           {customer.discountType === 'VIP' ? 'VIP' :
                            customer.discountType === 'BIRTHDAY' ? '생일자' :
@@ -344,14 +344,14 @@ export function OrderSummary({ customer, services, selectedCouponId, paymentMeth
               </div>
 
               {calculations.summary.packageDiscount > 0 && (
-                <div className="flex justify-between text-green-600">
+                <div className="flex justify-between text-slate-900">
                   <span>패키지 할인</span>
                   <span>-{formatPrice(calculations.summary.packageDiscount)}</span>
                 </div>
               )}
 
               {calculations.summary.customerDiscount > 0 && (
-                <div className="flex justify-between text-blue-600">
+                <div className="flex justify-between text-slate-900">
                   <span>
                     {customer.discountType === 'VIP' ? 'VIP' :
                      customer.discountType === 'BIRTHDAY' ? '생일자' :
@@ -362,7 +362,7 @@ export function OrderSummary({ customer, services, selectedCouponId, paymentMeth
               )}
 
               {calculations.summary.couponDiscount > 0 && (
-                <div className="flex justify-between items-center text-purple-600">
+                <div className="flex justify-between items-center text-slate-900">
                   <span className="flex items-center">
                     <Tag className="h-3 w-3 mr-1" />
                     쿠폰 할인
@@ -385,7 +385,7 @@ export function OrderSummary({ customer, services, selectedCouponId, paymentMeth
 
               <div className="flex justify-between text-xl font-bold border-t pt-2">
                 <span>최종 결제금액</span>
-                <span className="text-blue-600">{formatPrice(calculations.summary.finalPrice)}</span>
+                <span className="text-slate-900">{formatPrice(calculations.summary.finalPrice)}</span>
               </div>
 
               {calculations.summary.discountRate > 0 && (
@@ -410,8 +410,8 @@ export function OrderSummary({ customer, services, selectedCouponId, paymentMeth
                 onClick={() => onPaymentMethodChange(key)}
                 className={`p-3 text-sm border rounded-lg transition-colors ${
                   paymentMethod === key
-                    ? 'border-blue-500 bg-blue-50 text-blue-700'
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-slate-900 bg-slate-100 text-slate-900 font-medium'
+                    : 'border-slate-200 hover:border-slate-300'
                 }`}
               >
                 {label}
@@ -424,7 +424,7 @@ export function OrderSummary({ customer, services, selectedCouponId, paymentMeth
         <div className="flex items-center space-x-2 p-3 rounded-lg">
           {calculations?.canProceed ? (
             <>
-              <CheckCircle className="h-5 w-5 text-green-600" />
+              <CheckCircle className="h-5 w-5 text-slate-900" />
               <span className="text-green-700 font-medium">주문 가능</span>
             </>
           ) : (

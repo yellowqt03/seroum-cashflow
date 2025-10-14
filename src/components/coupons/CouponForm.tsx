@@ -291,7 +291,7 @@ export function CouponForm({ coupon, onSubmit, onCancel }: CouponFormProps) {
               name="isActive"
               checked={formData.isActive}
               onChange={handleChange}
-              className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              className="h-4 w-4 text-slate-900 border-gray-300 rounded focus:ring-slate-900"
             />
             <label htmlFor="isActive" className="text-sm font-medium text-gray-700">
               쿠폰 활성화

@@ -77,7 +77,7 @@ export function OptimalDiscountSuggestion({
   return (
     <Card className="p-6 border-l-4 border-l-green-400">
       <div className="flex items-center gap-3 mb-4">
-        <Sparkles className="h-6 w-6 text-green-600" />
+        <Sparkles className="h-6 w-6 text-slate-900" />
         <div>
           <h3 className="text-lg font-semibold text-gray-900">최적 할인 추천</h3>
           <p className="text-sm text-gray-600">가능한 모든 할인 조합을 분석했습니다</p>
@@ -89,7 +89,7 @@ export function OptimalDiscountSuggestion({
         <div className="bg-green-50 rounded-lg p-4 mb-4 border border-green-200">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-green-600" />
+              <TrendingUp className="h-5 w-5 text-slate-900" />
               <span className="font-medium text-green-800">💰 최대 절약 가능</span>
             </div>
             <Badge className="bg-green-100 text-green-800 border border-green-200">
@@ -107,7 +107,7 @@ export function OptimalDiscountSuggestion({
             </div>
             <div className="text-center">
               <div className="text-gray-600">최종 금액</div>
-              <div className="font-medium text-lg text-green-600">{formatCurrency(bestOption.finalPrice)}</div>
+              <div className="font-medium text-lg text-slate-900">{formatCurrency(bestOption.finalPrice)}</div>
             </div>
           </div>
           <div className="mt-3">
@@ -165,7 +165,7 @@ export function OptimalDiscountSuggestion({
             className={`border rounded-lg p-4 ${
               option === bestOption && option.discountAmount > 0
                 ? 'border-green-300 bg-green-50'
-                : 'border-gray-200 bg-white'
+                : 'border-slate-200 bg-white'
             }`}
           >
             <div className="flex items-center justify-between mb-2">
@@ -188,7 +188,7 @@ export function OptimalDiscountSuggestion({
 
             {/* 할인 내역 상세 */}
             {option.discountAmount > 0 && (
-              <div className="bg-gray-50 rounded p-3 text-sm">
+              <div className="bg-slate-50 rounded p-3 text-sm">
                 <div className="grid grid-cols-2 gap-2">
                   {option.appliedDiscounts.vipDiscount > 0 && (
                     <div className="flex justify-between">
@@ -239,7 +239,7 @@ export function OptimalDiscountSuggestion({
       {bestOption.discountAmount > 0 && (
         <div className="mt-4 pt-4 border-t">
           <div className="text-center text-sm text-gray-600">
-            최대 할인 적용 시 <strong className="text-green-600">{formatCurrency(bestOption.discountAmount)}</strong> 절약!
+            최대 할인 적용 시 <strong className="text-slate-900">{formatCurrency(bestOption.discountAmount)}</strong> 절약!
             <br />
             {customer.name}님께 가장 유리한 조건입니다.
           </div>

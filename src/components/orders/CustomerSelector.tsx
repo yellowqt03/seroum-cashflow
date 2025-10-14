@@ -105,12 +105,12 @@ export function CustomerSelector({ selectedCustomer, onCustomerSelect, onNewCust
 
             {/* 할인 안내 */}
             {selectedCustomer.discountType !== 'REGULAR' && (
-              <div className="bg-blue-50 p-3 rounded-lg text-sm">
+              <div className="bg-slate-50 p-3 rounded-lg text-sm">
                 {selectedCustomer.discountType === 'VIP' && (
-                  <p className="text-blue-700">🎉 VIP 전용 서비스 무료 이용 가능</p>
+                  <p className="text-slate-900">🎉 VIP 전용 서비스 무료 이용 가능</p>
                 )}
                 {selectedCustomer.discountType === 'BIRTHDAY' && (
-                  <div className="text-blue-700">
+                  <div className="text-slate-900">
                     <p>🎂 생일자 할인 50% (프리미엄회복, 프리미엄면역)</p>
                     <p className="text-xs mt-1">
                       올해 사용: {selectedCustomer.birthdayUsedCount}/8회
@@ -118,7 +118,7 @@ export function CustomerSelector({ selectedCustomer, onCustomerSelect, onNewCust
                   </div>
                 )}
                 {selectedCustomer.discountType === 'EMPLOYEE' && (
-                  <p className="text-blue-700">👔 모든 서비스 50% 직원 할인</p>
+                  <p className="text-slate-900">👔 모든 서비스 50% 직원 할인</p>
                 )}
               </div>
             )}
@@ -156,12 +156,12 @@ export function CustomerSelector({ selectedCustomer, onCustomerSelect, onNewCust
 
           {/* 검색 결과 */}
           {showSuggestions && customers.length > 0 && (
-            <div className="space-y-2 max-h-64 overflow-y-auto border border-gray-200 rounded-lg p-2">
+            <div className="space-y-2 max-h-64 overflow-y-auto border border-slate-200 rounded-lg p-2">
               {customers.map((customer) => (
                 <div
                   key={customer.id}
                   onClick={() => handleCustomerSelect(customer)}
-                  className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg cursor-pointer"
+                  className="flex items-center justify-between p-3 hover:bg-slate-50 rounded-lg cursor-pointer"
                 >
                   <div className="flex items-center space-x-3">
                     {getCustomerIcon(customer)}

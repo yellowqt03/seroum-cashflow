@@ -236,7 +236,7 @@ export function StaffAllocationManager({ couponId }: StaffAllocationManagerProps
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Users className="h-6 w-6 text-purple-600" />
+          <Users className="h-6 w-6 text-slate-900" />
           <div>
             <h2 className="text-xl font-semibold text-gray-900">직원별 쿠폰 할당</h2>
             {coupon && (

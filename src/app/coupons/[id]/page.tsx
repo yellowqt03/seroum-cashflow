@@ -96,7 +96,7 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
             <div className="h-16 w-16 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Ticket className="h-8 w-8 text-purple-600" />
+              <Ticket className="h-8 w-8 text-slate-900" />
             </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">{coupon.name}</h1>
@@ -172,13 +172,13 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
       </div>
 
       {/* 탭 */}
-      <div className="border-b border-gray-200 mb-6">
+      <div className="border-b border-slate-200 mb-6">
         <div className="flex gap-4">
           <button
             onClick={() => setActiveTab('allocations')}
             className={`px-4 py-3 border-b-2 font-medium transition-colors ${
               activeTab === 'allocations'
-                ? 'border-purple-600 text-purple-600'
+                ? 'border-purple-600 text-slate-900'
                 : 'border-transparent text-gray-600 hover:text-gray-900'
             }`}
           >
@@ -191,7 +191,7 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
             onClick={() => setActiveTab('usages')}
             className={`px-4 py-3 border-b-2 font-medium transition-colors ${
               activeTab === 'usages'
-                ? 'border-purple-600 text-purple-600'
+                ? 'border-purple-600 text-slate-900'
                 : 'border-transparent text-gray-600 hover:text-gray-900'
             }`}
           >

@@ -147,7 +147,7 @@ export function AllocationForm({
                 type="checkbox"
                 checked={formData.autoRefresh}
                 onChange={(e) => setFormData({ ...formData, autoRefresh: e.target.checked })}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                className="rounded border-gray-300 text-slate-900 focus:ring-slate-900"
               />
               <span className="text-sm font-medium text-gray-700">자동 갱신</span>
             </label>
@@ -179,7 +179,7 @@ export function AllocationForm({
               value={formData.note}
               onChange={(e) => setFormData({ ...formData, note: e.target.value })}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900"
               placeholder="할당 관련 메모를 입력하세요"
             />
           </div>

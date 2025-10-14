@@ -105,7 +105,7 @@ export function DiscountApprovalCard({ request, onApprove, onReject }: DiscountA
       </div>
 
       {/* 고객 정보 */}
-      <div className="bg-gray-50 rounded-lg p-4 mb-4">
+      <div className="bg-slate-50 rounded-lg p-4 mb-4">
         <div className="flex items-center gap-2 mb-2">
           <User className="h-4 w-4 text-gray-500" />
           <span className="font-medium text-gray-900">고객 정보</span>
@@ -131,7 +131,7 @@ export function DiscountApprovalCard({ request, onApprove, onReject }: DiscountA
       </div>
 
       {/* 서비스 정보 */}
-      <div className="bg-blue-50 rounded-lg p-4 mb-4">
+      <div className="bg-slate-50 rounded-lg p-4 mb-4">
         <div className="flex items-center gap-2 mb-2">
           <CreditCard className="h-4 w-4 text-blue-500" />
           <span className="font-medium text-gray-900">서비스 정보</span>
@@ -186,7 +186,7 @@ export function DiscountApprovalCard({ request, onApprove, onReject }: DiscountA
           </div>
           <div className="text-center">
             <div className="text-gray-500">최종 금액</div>
-            <div className="font-medium text-lg text-green-600">{formatCurrency(request.finalAmount)}</div>
+            <div className="font-medium text-lg text-slate-900">{formatCurrency(request.finalAmount)}</div>
           </div>
         </div>
       </div>
@@ -202,7 +202,7 @@ export function DiscountApprovalCard({ request, onApprove, onReject }: DiscountA
 
       {/* 직원 메모 */}
       {request.staffNote && (
-        <div className="bg-blue-50 rounded-lg p-4 mb-4">
+        <div className="bg-slate-50 rounded-lg p-4 mb-4">
           <div className="flex items-center gap-2 mb-2">
             <MessageSquare className="h-4 w-4 text-blue-500" />
             <span className="font-medium text-gray-900">직원 메모</span>

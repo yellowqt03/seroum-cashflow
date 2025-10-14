@@ -34,7 +34,7 @@ export function MonthlyNoteCard({ note, onEdit, onDelete }: MonthlyNoteCardProps
     <Card className="p-6 hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
-          <Calendar className="h-5 w-5 text-blue-600" />
+          <Calendar className="h-5 w-5 text-slate-900" />
           <div>
             <h3 className="text-lg font-semibold text-gray-900">
               {note.year}년 {monthNames[note.month - 1]}
@@ -49,13 +49,13 @@ export function MonthlyNoteCard({ note, onEdit, onDelete }: MonthlyNoteCardProps
             </p>
           </div>
         </div>
-        <Badge className="bg-blue-50 text-blue-700 border border-blue-200">
+        <Badge className="bg-slate-50 text-slate-900 border border-slate-200">
           {note.year}.{note.month.toString().padStart(2, '0')}
         </Badge>
       </div>
 
       <div className="mb-4">
-        <div className="bg-gray-50 rounded-lg p-4 min-h-[100px]">
+        <div className="bg-slate-50 rounded-lg p-4 min-h-[100px]">
           <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
             {note.content}
           </p>

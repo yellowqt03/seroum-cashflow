@@ -29,7 +29,7 @@ export function AllocationStats({ stats }: AllocationStatsProps) {
         <div className="bg-white rounded-lg border p-4">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm font-medium text-gray-600">할당 직원</p>
-            <Users className="h-5 w-5 text-blue-600" />
+            <Users className="h-5 w-5 text-slate-900" />
           </div>
           <p className="text-2xl font-bold text-gray-900">{summary.totalStaff}명</p>
         </div>
@@ -37,7 +37,7 @@ export function AllocationStats({ stats }: AllocationStatsProps) {
         <div className="bg-white rounded-lg border p-4">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm font-medium text-gray-600">총 할당</p>
-            <TrendingUp className="h-5 w-5 text-purple-600" />
+            <TrendingUp className="h-5 w-5 text-slate-900" />
           </div>
           <p className="text-2xl font-bold text-gray-900">{summary.totalAllocated}매</p>
         </div>
@@ -45,9 +45,9 @@ export function AllocationStats({ stats }: AllocationStatsProps) {
         <div className="bg-white rounded-lg border p-4">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm font-medium text-gray-600">사용됨</p>
-            <TrendingUp className="h-5 w-5 text-green-600" />
+            <TrendingUp className="h-5 w-5 text-slate-900" />
           </div>
-          <p className="text-2xl font-bold text-green-600">{summary.totalUsed}매</p>
+          <p className="text-2xl font-bold text-slate-900">{summary.totalUsed}매</p>
           <p className="text-xs text-gray-500 mt-1">
             평균 사용률: {summary.avgUsageRate}%
           </p>
@@ -56,9 +56,9 @@ export function AllocationStats({ stats }: AllocationStatsProps) {
         <div className="bg-white rounded-lg border p-4">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm font-medium text-gray-600">잔여</p>
-            <AlertCircle className="h-5 w-5 text-orange-600" />
+            <AlertCircle className="h-5 w-5 text-slate-900" />
           </div>
-          <p className="text-2xl font-bold text-orange-600">{summary.totalRemaining}매</p>
+          <p className="text-2xl font-bold text-slate-900">{summary.totalRemaining}매</p>
         </div>
       </div>
 
@@ -71,7 +71,7 @@ export function AllocationStats({ stats }: AllocationStatsProps) {
           </div>
           <div className="space-y-3">
             {topUsers.map((user, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div key={index} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                 <div className="flex items-center gap-3">
                   <div className={`
                     w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm
@@ -95,12 +95,12 @@ export function AllocationStats({ stats }: AllocationStatsProps) {
 
       {/* 권장 사항 */}
       {summary.avgUsageRate < 50 && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
           <div className="flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
+            <AlertCircle className="h-5 w-5 text-slate-900 mt-0.5" />
             <div>
               <h4 className="font-medium text-blue-900 mb-1">권장 사항</h4>
-              <p className="text-sm text-blue-700">
+              <p className="text-sm text-slate-900">
                 평균 사용률이 낮습니다. 직원들에게 쿠폰 사용을 독려하거나 할당량 조정을 고려해보세요.
               </p>
             </div>
@@ -111,7 +111,7 @@ export function AllocationStats({ stats }: AllocationStatsProps) {
       {summary.totalRemaining < 10 && summary.totalStaff > 0 && (
         <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
           <div className="flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-orange-600 mt-0.5" />
+            <AlertCircle className="h-5 w-5 text-slate-900 mt-0.5" />
             <div>
               <h4 className="font-medium text-orange-900 mb-1">잔여량 부족</h4>
               <p className="text-sm text-orange-700">

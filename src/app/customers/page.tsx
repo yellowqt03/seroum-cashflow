@@ -6,9 +6,9 @@ import { CustomersGrid } from '@/components/customers/CustomersGrid'
 
 export default function CustomersPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-50">
       {/* 헤더 */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-4">
@@ -23,13 +23,13 @@ export default function CustomersPage() {
               </h1>
             </div>
             <nav className="hidden md:flex space-x-6">
-              <Link href="/dashboard" className="text-gray-600 hover:text-blue-600 transition-colors">
+              <Link href="/dashboard" className="text-gray-600 hover:text-slate-900 transition-colors">
                 대시보드
               </Link>
-              <Link href="/services" className="text-gray-600 hover:text-blue-600 transition-colors">
+              <Link href="/services" className="text-gray-600 hover:text-slate-900 transition-colors">
                 서비스 관리
               </Link>
-              <Link href="/orders" className="text-gray-600 hover:text-blue-600 transition-colors">
+              <Link href="/orders" className="text-gray-600 hover:text-slate-900 transition-colors">
                 주문 관리
               </Link>
             </nav>

@@ -231,7 +231,7 @@ export default function UsersPage() {
                   <select
                     value={formData.role}
                     onChange={(e) => setFormData({ ...formData, role: e.target.value as 'ADMIN' | 'STAFF' })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900"
                     required
                   >
                     <option value="STAFF">직원</option>
@@ -246,7 +246,7 @@ export default function UsersPage() {
                   id="isActive"
                   checked={formData.isActive}
                   onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                  className="w-4 h-4 text-slate-900 rounded focus:ring-slate-900"
                 />
                 <label htmlFor="isActive" className="text-sm text-gray-700">
                   활성화 (비활성화 시 로그인 불가)
@@ -269,7 +269,7 @@ export default function UsersPage() {
         <div className="bg-white rounded-xl border overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b">
+              <thead className="bg-slate-50 border-b">
                 <tr>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     이름
@@ -300,7 +300,7 @@ export default function UsersPage() {
                   </tr>
                 ) : (
                   users.map((user) => (
-                    <tr key={user.id} className="hover:bg-gray-50">
+                    <tr key={user.id} className="hover:bg-slate-50">
                       <td className="px-4 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           <span className="font-medium text-gray-900">{user.name}</span>
@@ -311,7 +311,7 @@ export default function UsersPage() {
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
                         {user.role === 'ADMIN' ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-slate-900">
                             <Shield className="h-3 w-3" />
                             관리자
                           </span>
@@ -342,7 +342,7 @@ export default function UsersPage() {
                         <div className="flex justify-end gap-2">
                           <button
                             onClick={() => handleEdit(user)}
-                            className="text-blue-600 hover:text-blue-800"
+                            className="text-slate-900 hover:text-slate-900"
                             title="수정"
                           >
                             <Edit2 className="h-4 w-4" />
@@ -365,8 +365,8 @@ export default function UsersPage() {
         </div>
 
         {/* 안내 메시지 */}
-        <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <p className="text-sm text-blue-800">
+        <div className="mt-6 bg-slate-50 border border-slate-200 rounded-lg p-4">
+          <p className="text-sm text-slate-900">
             <strong>참고:</strong> 관리자는 모든 기능에 접근할 수 있으며, 직원은 서비스 조회, 고객 관리, 주문 접수만 가능합니다.
           </p>
         </div>

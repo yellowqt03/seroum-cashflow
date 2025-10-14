@@ -301,7 +301,7 @@ export function OrderForm({ onOrderSubmit, onCancel }: OrderFormProps) {
           {step === 3 && (
             <div className="space-y-6">
               {/* 주문 확인 */}
-              <div className="bg-white p-6 rounded-lg border border-gray-200">
+              <div className="bg-white p-6 rounded-lg border border-slate-200">
                 <h3 className="text-lg font-semibold mb-4">주문 확인</h3>
 
                 <div className="space-y-4">
@@ -348,7 +348,7 @@ export function OrderForm({ onOrderSubmit, onCancel }: OrderFormProps) {
       </div>
 
       {/* 하단 네비게이션 - 화면 하단 고정 */}
-      <div className="sticky bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-lg -mx-6 px-6 py-4 mt-6">
+      <div className="sticky bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-lg -mx-6 px-6 py-4 mt-6">
         <div className="flex justify-between max-w-7xl mx-auto">
           <Button
             variant="outline"

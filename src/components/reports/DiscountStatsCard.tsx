@@ -29,7 +29,7 @@ export function DiscountStatsCard({ stats }: DiscountStatsCardProps) {
       <h3 className="text-lg font-semibold text-gray-900 mb-6">할인 유형별 통계</h3>
 
       {/* 전체 통계 */}
-      <div className="grid grid-cols-2 gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
+      <div className="grid grid-cols-2 gap-4 mb-6 p-4 bg-slate-50 rounded-lg">
         <div>
           <p className="text-sm text-gray-600 mb-1">총 할인 금액</p>
           <p className="text-2xl font-bold text-red-600">

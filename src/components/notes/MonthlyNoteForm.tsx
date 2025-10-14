@@ -116,7 +116,7 @@ export function MonthlyNoteForm({ note, onSave, onCancel }: MonthlyNoteFormProps
             특이사항 내용 *
           </label>
           <textarea
-            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none ${
+            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 resize-none ${
               errors.content ? 'border-red-300' : 'border-gray-300'
             }`}
             rows={8}

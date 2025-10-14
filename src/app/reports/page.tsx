@@ -109,7 +109,7 @@ export default function ReportsPage() {
       {/* 헤더 */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
-          <BarChart3 className="h-8 w-8 text-blue-600" />
+          <BarChart3 className="h-8 w-8 text-slate-900" />
           <div>
             <h1 className="text-3xl font-bold text-gray-900">매출 리포트</h1>
             <p className="text-gray-600 mt-1">상세 매출 분석 및 통계</p>
@@ -183,7 +183,7 @@ export default function ReportsPage() {
             <div className="bg-white rounded-lg shadow-sm border p-6">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-sm font-medium text-gray-600">총 매출</p>
-                <TrendingUp className="h-5 w-5 text-blue-600" />
+                <TrendingUp className="h-5 w-5 text-slate-900" />
               </div>
               <p className="text-2xl font-bold text-gray-900">
                 {totalStats.totalSales.toLocaleString()}원
@@ -207,9 +207,9 @@ export default function ReportsPage() {
             <div className="bg-white rounded-lg shadow-sm border p-6">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-sm font-medium text-gray-600">순 매출</p>
-                <TrendingUp className="h-5 w-5 text-green-600" />
+                <TrendingUp className="h-5 w-5 text-slate-900" />
               </div>
-              <p className="text-2xl font-bold text-green-600">
+              <p className="text-2xl font-bold text-slate-900">
                 {totalStats.netSales.toLocaleString()}원
               </p>
               <p className="text-xs text-gray-500 mt-1">실제 수익</p>
@@ -218,7 +218,7 @@ export default function ReportsPage() {
             <div className="bg-white rounded-lg shadow-sm border p-6">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-sm font-medium text-gray-600">평균 주문액</p>
-                <TrendingUp className="h-5 w-5 text-purple-600" />
+                <TrendingUp className="h-5 w-5 text-slate-900" />
               </div>
               <p className="text-2xl font-bold text-gray-900">
                 {totalStats.avgOrderAmount.toLocaleString()}원
