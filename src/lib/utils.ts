@@ -105,22 +105,25 @@ export function formatPhoneNumber(phone: string): string {
 }
 
 // 생일인지 확인 (월, 일만 비교)
-export function isBirthday(birthDate: Date): boolean {
+export function isBirthday(birthDate: Date | string): boolean {
+  const date = typeof birthDate === 'string' ? new Date(birthDate) : birthDate
   const today = new Date()
-  return birthDate.getMonth() === today.getMonth() &&
-         birthDate.getDate() === today.getDate()
+  return date.getMonth() === today.getMonth() &&
+         date.getDate() === today.getDate()
 }
 
 // 생일 월인지 확인
-export function isBirthdayMonth(birthDate: Date): boolean {
+export function isBirthdayMonth(birthDate: Date | string): boolean {
+  const date = typeof birthDate === 'string' ? new Date(birthDate) : birthDate
   const today = new Date()
-  return birthDate.getMonth() === today.getMonth()
+  return date.getMonth() === today.getMonth()
 }
 
 // 주차 계산 (1일부터 시작하는 주차)
-export function getWeekOfMonth(date: Date): number {
-  const firstDay = new Date(date.getFullYear(), date.getMonth(), 1)
-  const dayOfMonth = date.getDate()
+export function getWeekOfMonth(date: Date | string): number {
+  const d = typeof date === 'string' ? new Date(date) : date
+  const firstDay = new Date(d.getFullYear(), d.getMonth(), 1)
+  const dayOfMonth = d.getDate()
   const firstDayOfWeek = firstDay.getDay()
   return Math.ceil((dayOfMonth + firstDayOfWeek) / 7)
 }
