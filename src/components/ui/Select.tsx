@@ -15,13 +15,13 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     const id = props.id || props.name
 
     return (
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         {label && (
           <label
             htmlFor={id}
             className={cn(
-              "block text-sm font-medium text-gray-700",
-              required && "after:content-['*'] after:ml-0.5 after:text-red-500"
+              "block text-xs font-medium text-slate-700",
+              required && "after:content-['*'] after:ml-0.5 after:text-red-600"
             )}
           >
             {label}
@@ -31,8 +31,8 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           id={id}
           ref={ref}
           className={cn(
-            "flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50",
-            error && "border-red-500 focus:ring-red-500",
+            "flex h-9 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-slate-50",
+            error && "border-red-300 focus:ring-red-600",
             className
           )}
           {...props}
@@ -40,7 +40,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           {children}
         </select>
         {error && (
-          <p className="text-sm text-red-600">{error}</p>
+          <p className="text-xs text-red-600">{error}</p>
         )}
       </div>
     )
