@@ -24,7 +24,7 @@ export async function GET(request: Request) {
     })
 
     return NextResponse.json(notes)
-  } catch (error) {
+  } catch {
     console.error('월별 특이사항 조회 오류:', error)
     return NextResponse.json(
       { error: '월별 특이사항을 불러오는 중 오류가 발생했습니다.' },
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
     })
 
     return NextResponse.json(note)
-  } catch (error) {
+  } catch {
     console.error('월별 특이사항 저장 오류:', error)
     return NextResponse.json(
       { error: '월별 특이사항을 저장하는 중 오류가 발생했습니다.' },

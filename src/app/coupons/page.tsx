@@ -211,8 +211,8 @@ export default function CouponsPage() {
         <div className="flex items-center gap-3">
           <Ticket className="h-8 w-8 text-slate-900" />
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">쿠폰 관리</h1>
-            <p className="text-gray-600 mt-1">할인 쿠폰을 생성하고 관리합니다</p>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">쿠폰 관리</h1>
+            <p className="text-sm md:text-base text-gray-600 mt-1">할인 쿠폰을 생성하고 관리합니다</p>
           </div>
         </div>
         <Button onClick={() => setShowForm(true)} variant="primary">
@@ -222,7 +222,7 @@ export default function CouponsPage() {
       </div>
 
       {/* 통계 카드 */}
-      <div className="grid grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
         <div className="bg-white rounded-lg shadow-sm border p-6">
           <div className="flex items-center justify-between">
             <div>

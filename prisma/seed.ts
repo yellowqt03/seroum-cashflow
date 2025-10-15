@@ -6,7 +6,7 @@ async function main() {
   console.log('🌱 시드 데이터를 생성 중...')
 
   // 추가구성 옵션 생성
-  const whiteJade = await prisma.addOnOption.upsert({
+  await prisma.addOnOption.upsert({
     where: { name: '백옥' },
     update: {},
     create: {
@@ -16,7 +16,7 @@ async function main() {
     }
   })
 
-  const whiteJadeDouble = await prisma.addOnOption.upsert({
+  await prisma.addOnOption.upsert({
     where: { name: '백옥더블' },
     update: {},
     create: {
@@ -26,7 +26,7 @@ async function main() {
     }
   })
 
-  const thymus = await prisma.addOnOption.upsert({
+  await prisma.addOnOption.upsert({
     where: { name: '가슴샘' },
     update: {},
     create: {
@@ -36,7 +36,7 @@ async function main() {
     }
   })
 
-  const powerShot = await prisma.addOnOption.upsert({
+  await prisma.addOnOption.upsert({
     where: { name: '강력주사' },
     update: {},
     create: {

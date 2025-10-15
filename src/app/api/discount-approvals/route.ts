@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { Prisma } from '@prisma/client'
 
 export async function GET(request: Request) {
   try {
@@ -7,7 +8,7 @@ export async function GET(request: Request) {
     const status = searchParams.get('status')
     const requestedBy = searchParams.get('requestedBy')
 
-    let where: any = {}
+    const where: Prisma.DiscountApprovalRequestWhereInput = {}
     if (status) {
       where.status = status
     }
@@ -40,7 +41,7 @@ export async function GET(request: Request) {
     }))
 
     return NextResponse.json(formattedRequests)
-  } catch (error) {
+  } catch {
     console.error('할인 승인 요청 조회 오류:', error)
     return NextResponse.json(
       { error: '할인 승인 요청을 불러오는 중 오류가 발생했습니다.' },
@@ -102,7 +103,7 @@ export async function POST(request: Request) {
       appliedDiscounts: JSON.parse(approvalRequest.appliedDiscounts),
       serviceDetails: JSON.parse(approvalRequest.serviceDetails)
     })
-  } catch (error) {
+  } catch {
     console.error('할인 승인 요청 생성 오류:', error)
     return NextResponse.json(
       { error: '할인 승인 요청을 생성하는 중 오류가 발생했습니다.' },

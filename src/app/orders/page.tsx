@@ -18,7 +18,7 @@ export default function OrdersPage() {
                   홈으로
                 </Button>
               </Link>
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
                 주문 관리
               </h1>
             </div>
@@ -39,9 +39,9 @@ export default function OrdersPage() {
 
       {/* 메인 콘텐츠 */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">주문 관리</h2>
-          <p className="text-gray-600">
+        <div className="mb-6 md:mb-8">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2">주문 관리</h2>
+          <p className="text-sm md:text-base text-gray-600">
             고객 주문을 접수하고 진행 상황을 관리하며 할인이 자동으로 적용됩니다.
           </p>
         </div>

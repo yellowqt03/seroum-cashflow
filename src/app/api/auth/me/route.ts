@@ -13,7 +13,7 @@ export async function GET() {
     }
 
     return NextResponse.json({ user })
-  } catch (error) {
+  } catch {
     console.error('사용자 정보 조회 오류:', error)
     return NextResponse.json(
       { error: '사용자 정보 조회 중 오류가 발생했습니다.' },

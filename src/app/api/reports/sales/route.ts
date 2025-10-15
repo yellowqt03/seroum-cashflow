@@ -75,7 +75,7 @@ export async function GET(request: Request) {
       salesByCategory,
       discountStats
     })
-  } catch (error) {
+  } catch {
     console.error('매출 리포트 조회 오류:', error)
     return NextResponse.json(
       { error: '매출 리포트를 불러오는 중 오류가 발생했습니다.' },

@@ -64,7 +64,7 @@ export async function PUT(
     })
 
     return NextResponse.json(allocation)
-  } catch (error) {
+  } catch {
     console.error('쿠폰 할당 수정 오류:', error)
     return NextResponse.json(
       { error: '쿠폰 할당 수정 중 오류가 발생했습니다.' },
@@ -105,7 +105,7 @@ export async function DELETE(
       success: true,
       message: '할당이 삭제되었습니다.'
     })
-  } catch (error) {
+  } catch {
     console.error('쿠폰 할당 삭제 오류:', error)
     return NextResponse.json(
       { error: '쿠폰 할당 삭제 중 오류가 발생했습니다.' },
@@ -156,7 +156,7 @@ export async function POST(
     })
 
     return NextResponse.json(allocation)
-  } catch (error) {
+  } catch {
     console.error('할당 초기화 오류:', error)
     return NextResponse.json(
       { error: '할당 초기화 중 오류가 발생했습니다.' },

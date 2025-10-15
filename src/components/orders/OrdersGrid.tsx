@@ -16,13 +16,19 @@ import {
   ShoppingBag,
   Clock,
   CheckCircle,
-  XCircle,
   DollarSign
 } from 'lucide-react'
 
 export function OrdersGrid() {
   const { showToast } = useToast()
-  const [orders, setOrders] = useState<any[]>([])
+  interface Order {
+    id: string
+    status: string
+    finalAmount: number
+    [key: string]: unknown
+  }
+
+  const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState<string>('all')
@@ -47,7 +53,7 @@ export function OrdersGrid() {
       }
       const data = await response.json()
       setOrders(data)
-    } catch (err) {
+    } catch {
       setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.')
     } finally {
       setLoading(false)
@@ -81,7 +87,7 @@ export function OrdersGrid() {
     }
   }
 
-  const handleOrderSubmit = (order: any) => {
+  const handleOrderSubmit = () => {
     setShowOrderForm(false)
     fetchOrders() // 새로운 주문 추가 후 목록 새로고침
   }
@@ -147,7 +153,7 @@ export function OrdersGrid() {
       {/* 상단 액션 및 통계 */}
       <div className="flex justify-between items-center">
         <div className="flex items-center space-x-4">
-          <h2 className="text-2xl font-bold text-gray-900">주문 관리</h2>
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">주문 관리</h2>
           <Badge variant="secondary">{stats.total}건</Badge>
         </div>
         <div className="flex items-center space-x-2">

@@ -8,10 +8,9 @@ interface SalesChartProps {
     totalDiscount: number
     orderCount: number
   }>
-  period: string
 }
 
-export function SalesChart({ data, period }: SalesChartProps) {
+export function SalesChart({ data }: SalesChartProps) {
   if (!data || data.length === 0) {
     return (
       <div className="bg-white rounded-lg border p-6">
@@ -22,7 +21,6 @@ export function SalesChart({ data, period }: SalesChartProps) {
 
   // 최대값 계산 (차트 스케일링용)
   const maxSales = Math.max(...data.map(d => d.totalSales))
-  const maxOrders = Math.max(...data.map(d => d.orderCount))
 
   // 기간별 라벨 포맷
   const formatLabel = (period: string) => {
@@ -45,7 +43,6 @@ export function SalesChart({ data, period }: SalesChartProps) {
       <div className="space-y-4">
         {data.map((item, index) => {
           const salesBarWidth = maxSales > 0 ? (item.netSales / maxSales) * 100 : 0
-          const discountBarWidth = maxSales > 0 ? (item.totalDiscount / maxSales) * 100 : 0
 
           return (
             <div key={index} className="space-y-2">

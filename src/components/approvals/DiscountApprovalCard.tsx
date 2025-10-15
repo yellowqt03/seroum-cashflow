@@ -32,7 +32,7 @@ interface DiscountApprovalRequest {
     serviceName: string
     packageType: string
     quantity: number
-    addOns: any[]
+    addOns: Array<{ name: string; [key: string]: unknown }>
   }
 }
 

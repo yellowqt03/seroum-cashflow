@@ -122,7 +122,7 @@ export function calculateDiscount(input: DiscountCalculationInput): DiscountCalc
   const { service, customer, packageType, quantity, addOns = [] } = input
 
   // 1. 기본 서비스 가격 계산
-  let servicePrice = getServicePrice(service, packageType, quantity)
+  const servicePrice = getServicePrice(service, packageType, quantity)
 
   // 2. 추가구성 옵션 가격 계산
   const addOnPrice = addOns.reduce((total, addOn) => {

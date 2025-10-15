@@ -3,11 +3,12 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const customer = await prisma.customer.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         orders: {
           orderBy: { createdAt: 'desc' },
@@ -24,7 +25,7 @@ export async function GET(
     }
 
     return NextResponse.json(customer)
-  } catch (error) {
+  } catch {
     console.error('고객 조회 오류:', error)
     return NextResponse.json(
       { error: '고객 정보를 불러오는데 실패했습니다.' },
@@ -35,9 +36,10 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const data = await request.json()
 
     // 전화번호 중복 체크 (다른 고객과 중복되는지)
@@ -45,7 +47,7 @@ export async function PUT(
       const existingCustomer = await prisma.customer.findFirst({
         where: {
           phone: data.phone,
-          id: { not: params.id }
+          id: { not: id }
         }
       })
 
@@ -58,7 +60,7 @@ export async function PUT(
     }
 
     const customer = await prisma.customer.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name: data.name,
         phone: data.phone || null,
@@ -70,7 +72,7 @@ export async function PUT(
     })
 
     return NextResponse.json(customer)
-  } catch (error) {
+  } catch {
     console.error('고객 수정 오류:', error)
     return NextResponse.json(
       { error: '고객 정보 수정에 실패했습니다.' },
@@ -81,12 +83,13 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     // 주문이 있는 고객은 삭제할 수 없음
     const orderCount = await prisma.order.count({
-      where: { customerId: params.id }
+      where: { customerId: id }
     })
 
     if (orderCount > 0) {
@@ -97,11 +100,11 @@ export async function DELETE(
     }
 
     await prisma.customer.delete({
-      where: { id: params.id }
+      where: { id }
     })
 
     return NextResponse.json({ message: '고객이 삭제되었습니다.' })
-  } catch (error) {
+  } catch {
     console.error('고객 삭제 오류:', error)
     return NextResponse.json(
       { error: '고객 삭제에 실패했습니다.' },

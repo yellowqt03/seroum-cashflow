@@ -3,11 +3,12 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const service = await prisma.service.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!service) {
@@ -18,7 +19,7 @@ export async function GET(
     }
 
     return NextResponse.json(service)
-  } catch (error) {
+  } catch {
     console.error('서비스 조회 오류:', error)
     return NextResponse.json(
       { error: '서비스 정보를 불러오는데 실패했습니다.' },
@@ -29,13 +30,14 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const data = await request.json()
 
     const service = await prisma.service.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name: data.name,
         category: data.category,
@@ -54,7 +56,7 @@ export async function PUT(
     })
 
     return NextResponse.json(service)
-  } catch (error) {
+  } catch {
     console.error('서비스 수정 오류:', error)
     return NextResponse.json(
       { error: '서비스 수정에 실패했습니다.' },
@@ -65,12 +67,13 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     // 주문에서 사용 중인지 확인
     const orderItems = await prisma.orderItem.count({
-      where: { serviceId: params.id }
+      where: { serviceId: id }
     })
 
     if (orderItems > 0) {
@@ -81,11 +84,11 @@ export async function DELETE(
     }
 
     await prisma.service.delete({
-      where: { id: params.id }
+      where: { id }
     })
 
     return NextResponse.json({ success: true, message: '서비스가 삭제되었습니다.' })
-  } catch (error) {
+  } catch {
     console.error('서비스 삭제 오류:', error)
     return NextResponse.json(
       { error: '서비스 삭제에 실패했습니다.' },

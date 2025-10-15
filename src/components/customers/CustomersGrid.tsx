@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Customer, DISCOUNT_TYPES, CUSTOMER_SOURCES } from '@/lib/types'
 import { useToast } from '@/components/providers/ToastProvider'
-import { Search, Filter, UserPlus, Users, Crown, Gift, Briefcase, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Search, UserPlus, Users, Crown, Gift, Briefcase, ChevronLeft, ChevronRight } from 'lucide-react'
 
 const ITEMS_PER_PAGE = 30
 
@@ -39,7 +39,7 @@ export function CustomersGrid() {
       }
       const data = await response.json()
       setCustomers(data)
-    } catch (err) {
+    } catch {
       setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.')
     } finally {
       setLoading(false)
@@ -67,7 +67,7 @@ export function CustomersGrid() {
       setShowForm(false)
       setEditingCustomer(null)
       showToast(editingCustomer ? '고객 정보가 수정되었습니다' : '고객이 등록되었습니다', 'success')
-    } catch (err) {
+    } catch {
       const errorMsg = err instanceof Error ? err.message : '저장 중 오류가 발생했습니다.'
       setError(errorMsg)
       showToast(errorMsg, 'error')
@@ -99,7 +99,7 @@ export function CustomersGrid() {
 
       await fetchCustomers()
       showToast('고객이 삭제되었습니다', 'success')
-    } catch (err) {
+    } catch {
       showToast(err instanceof Error ? err.message : '고객 삭제에 실패했습니다', 'error')
     }
   }
@@ -171,7 +171,7 @@ export function CustomersGrid() {
       {/* 상단 액션 */}
       <div className="flex justify-between items-center">
         <div className="flex items-center space-x-4">
-          <h2 className="text-2xl font-bold text-gray-900">고객 관리</h2>
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">고객 관리</h2>
           <Badge variant="secondary">{stats.total}명</Badge>
         </div>
         <Button onClick={() => setShowForm(true)}>
@@ -279,21 +279,22 @@ export function CustomersGrid() {
 
       {/* 페이지네이션 */}
       {totalPages > 1 && (
-        <div className="sticky bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-lg -mx-6 px-6 py-4 mt-6">
-          <div className="flex items-center justify-between max-w-7xl mx-auto">
-            <div className="text-sm text-gray-600">
+        <div className="bg-white border-t border-slate-200 rounded-lg shadow-md p-4 mt-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 max-w-7xl mx-auto">
+            <div className="text-xs sm:text-sm text-gray-600">
               {startIndex + 1}-{Math.min(endIndex, filteredCustomers.length)} / {filteredCustomers.length}명
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2 flex-wrap justify-center">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                 disabled={currentPage === 1}
+                className="min-h-[40px]"
               >
-                <ChevronLeft className="h-4 w-4 mr-1" />
-                이전
+                <ChevronLeft className="h-4 w-4 sm:mr-1" />
+                <span className="hidden sm:inline">이전</span>
               </Button>
 
               <div className="flex items-center gap-1">
@@ -307,16 +308,16 @@ export function CustomersGrid() {
                     return (
                       <Button
                         key={page}
-                        variant={currentPage === page ? 'default' : 'outline'}
+                        variant={currentPage === page ? 'primary' : 'outline'}
                         size="sm"
                         onClick={() => setCurrentPage(page)}
-                        className="min-w-[40px]"
+                        className="min-w-[40px] min-h-[40px]"
                       >
                         {page}
                       </Button>
                     )
                   } else if (page === currentPage - 3 || page === currentPage + 3) {
-                    return <span key={page} className="px-2">...</span>
+                    return <span key={page} className="px-1 sm:px-2 text-gray-400">...</span>
                   }
                   return null
                 })}
@@ -327,9 +328,10 @@ export function CustomersGrid() {
                 size="sm"
                 onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                 disabled={currentPage === totalPages}
+                className="min-h-[40px]"
               >
-                다음
-                <ChevronRight className="h-4 w-4 ml-1" />
+                <span className="hidden sm:inline">다음</span>
+                <ChevronRight className="h-4 w-4 sm:ml-1" />
               </Button>
             </div>
           </div>

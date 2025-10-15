@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     for (const item of salesData) {
       try {
         // 1. 서비스 찾기 (이름으로)
-        let service = await prisma.service.findFirst({
+        const service = await prisma.service.findFirst({
           where: { name: item.serviceName }
         })
 
@@ -116,7 +116,7 @@ export async function POST(request: Request) {
       message: '업로드 완료',
       results
     })
-  } catch (error) {
+  } catch {
     console.error('매출 데이터 업로드 오류:', error)
     return NextResponse.json(
       { error: '매출 데이터 업로드 중 오류가 발생했습니다.' },

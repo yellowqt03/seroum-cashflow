@@ -8,17 +8,16 @@ import { calculateOptimalDiscount, OptimalDiscountOption } from '@/lib/discount'
 import { Customer } from '@/lib/types'
 import { Sparkles, TrendingUp, AlertTriangle, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react'
 
-interface ServiceItem {
-  service: any
-  packageType: string
-  quantity: number
-  unitPrice: number
-  totalPrice: number
+interface Service {
+  id: string
+  name: string
+  price: number
+  [key: string]: unknown
 }
 
 interface OptimalDiscountSuggestionProps {
   customer: Customer | null
-  service: any
+  service: Service
   quantity: number
   onApplyDiscount: (option: OptimalDiscountOption) => void
 }

@@ -31,7 +31,7 @@ export async function GET() {
     })
 
     return NextResponse.json({ users })
-  } catch (error) {
+  } catch {
     console.error('직원 목록 조회 오류:', error)
     return NextResponse.json(
       { error: '직원 목록 조회 중 오류가 발생했습니다.' },
@@ -113,7 +113,7 @@ export async function POST(request: Request) {
     })
 
     return NextResponse.json({ user: newUser }, { status: 201 })
-  } catch (error) {
+  } catch {
     console.error('직원 생성 오류:', error)
     return NextResponse.json(
       { error: '직원 생성 중 오류가 발생했습니다.' },

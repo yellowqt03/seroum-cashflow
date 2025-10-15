@@ -17,6 +17,7 @@ interface User {
 }
 
 export default function UsersPage() {
+  const { showToast } = useToast()
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -43,7 +44,7 @@ export default function UsersPage() {
       } else {
         setError(data.error || '직원 목록을 불러오는데 실패했습니다.')
       }
-    } catch (err) {
+    } catch {
       setError('직원 목록을 불러오는 중 오류가 발생했습니다.')
     } finally {
       setLoading(false)
@@ -96,7 +97,7 @@ export default function UsersPage() {
         isActive: true
       })
       fetchUsers()
-    } catch (err) {
+    } catch {
       setError('처리 중 오류가 발생했습니다.')
     }
   }
@@ -132,7 +133,7 @@ export default function UsersPage() {
       }
 
       fetchUsers()
-    } catch (err) {
+    } catch {
       showToast('삭제 중 오류가 발생했습니다.', 'warning')
     }
   }

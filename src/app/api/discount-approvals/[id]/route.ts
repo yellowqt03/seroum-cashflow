@@ -3,10 +3,10 @@ import { prisma } from '@/lib/prisma'
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
     const data = await request.json()
     const { status, approvedBy, adminNote } = data
 
@@ -164,7 +164,7 @@ export async function PUT(
       serviceDetails: JSON.parse(result.approval.serviceDetails),
       order: result.order
     })
-  } catch (error) {
+  } catch {
     console.error('할인 승인 처리 오류:', error)
     return NextResponse.json(
       { error: '할인 승인을 처리하는 중 오류가 발생했습니다.' },
@@ -175,17 +175,17 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
 
     await prisma.discountApprovalRequest.delete({
       where: { id }
     })
 
     return NextResponse.json({ success: true })
-  } catch (error) {
+  } catch {
     console.error('할인 승인 요청 삭제 오류:', error)
     return NextResponse.json(
       { error: '할인 승인 요청을 삭제하는 중 오류가 발생했습니다.' },

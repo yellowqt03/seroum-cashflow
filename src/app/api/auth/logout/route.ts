@@ -6,7 +6,7 @@ export async function POST() {
     await clearSession()
 
     return NextResponse.json({ success: true, message: '로그아웃되었습니다.' })
-  } catch (error) {
+  } catch {
     console.error('로그아웃 오류:', error)
     return NextResponse.json(
       { success: false, error: '로그아웃 중 오류가 발생했습니다.' },

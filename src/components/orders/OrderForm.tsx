@@ -9,9 +9,9 @@ import { CustomerForm, CustomerFormData } from '../customers/CustomerForm'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Customer } from '@/lib/types'
-import { calculateAdvancedDiscount, createDiscountApprovalRequest, OptimalDiscountOption } from '@/lib/discount'
+import { calculateAdvancedDiscount, OptimalDiscountOption } from '@/lib/discount'
 import { useToast } from '@/components/providers/ToastProvider'
-import { ArrowLeft, ArrowRight, Save, X, AlertTriangle } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Save, X } from 'lucide-react'
 
 interface ServiceItem {
   service: any
@@ -36,8 +36,6 @@ export function OrderForm({ onOrderSubmit, onCancel }: OrderFormProps) {
   const [notes, setNotes] = useState<string>('')
   const [showNewCustomerForm, setShowNewCustomerForm] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [discountConflicts, setDiscountConflicts] = useState<any[]>([])
-  const [requiresApproval, setRequiresApproval] = useState(false)
 
   const canProceedToNext = () => {
     switch (step) {

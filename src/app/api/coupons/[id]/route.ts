@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { Prisma } from '@prisma/client'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
 
     const coupon = await prisma.coupon.findUnique({
       where: { id },
@@ -49,7 +50,7 @@ export async function GET(
       canUse,
       remainingUsage: coupon.usageLimit ? Math.max(0, coupon.usageLimit - coupon.usedCount) : null
     })
-  } catch (error) {
+  } catch {
     console.error('쿠폰 조회 오류:', error)
     return NextResponse.json(
       { error: '쿠폰 정보를 불러오는 중 오류가 발생했습니다.' },
@@ -60,10 +61,10 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
     const data = await request.json()
 
     const {
@@ -117,7 +118,7 @@ export async function PUT(
       }
     }
 
-    const updateData: any = {}
+    const updateData: Prisma.CouponUpdateInput = {}
     if (name !== undefined) updateData.name = name
     if (discountType !== undefined) updateData.discountType = discountType
     if (discountValue !== undefined) updateData.discountValue = discountValue
@@ -141,7 +142,7 @@ export async function PUT(
     })
 
     return NextResponse.json(coupon)
-  } catch (error) {
+  } catch {
     console.error('쿠폰 수정 오류:', error)
     return NextResponse.json(
       { error: '쿠폰 수정 중 오류가 발생했습니다.' },
@@ -152,10 +153,10 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
 
     // 쿠폰 사용 이력이 있는지 확인
     const coupon = await prisma.coupon.findUnique({
@@ -188,7 +189,7 @@ export async function DELETE(
     })
 
     return NextResponse.json({ success: true })
-  } catch (error) {
+  } catch {
     console.error('쿠폰 삭제 오류:', error)
     return NextResponse.json(
       { error: '쿠폰 삭제 중 오류가 발생했습니다.' },

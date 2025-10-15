@@ -129,7 +129,7 @@ export async function GET(request: Request) {
       totalStats,
       allServices: serviceStats
     })
-  } catch (error) {
+  } catch {
     console.error('서비스 리포트 조회 오류:', error)
     return NextResponse.json(
       { error: '서비스 리포트를 불러오는 중 오류가 발생했습니다.' },

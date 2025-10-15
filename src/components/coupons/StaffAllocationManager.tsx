@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button'
 import { AllocationCard } from './AllocationCard'
 import { AllocationForm } from './AllocationForm'
 import { AllocationStats } from './AllocationStats'
+import { useToast } from '@/components/providers/ToastProvider'
 import { Users, Plus, RefreshCw, BarChart3 } from 'lucide-react'
 
 interface Coupon {
@@ -35,6 +36,7 @@ interface StaffAllocationManagerProps {
 }
 
 export function StaffAllocationManager({ couponId }: StaffAllocationManagerProps) {
+  const { showToast } = useToast()
   const [loading, setLoading] = useState(true)
   const [coupon, setCoupon] = useState<Coupon | null>(null)
   const [allocations, setAllocations] = useState<Allocation[]>([])

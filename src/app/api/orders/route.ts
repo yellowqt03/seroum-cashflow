@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { Prisma } from '@prisma/client'
 import { calculateDiscount } from '@/lib/discount'
 
 export async function GET(request: Request) {
@@ -9,7 +10,7 @@ export async function GET(request: Request) {
     const status = searchParams.get('status')
     const limit = parseInt(searchParams.get('limit') || '50')
 
-    const where: any = {}
+    const where: Prisma.OrderWhereInput = {}
 
     if (customerId) {
       where.customerId = customerId
@@ -42,7 +43,7 @@ export async function GET(request: Request) {
     })
 
     return NextResponse.json(orders)
-  } catch (error) {
+  } catch {
     console.error('주문 조회 오류:', error)
     return NextResponse.json(
       { error: '주문 정보를 불러오는데 실패했습니다.' },
@@ -126,7 +127,7 @@ export async function POST(request: Request) {
     // 할인 계산 및 검증
     let totalSubtotal = 0
     let totalDiscount = 0
-    let calculatedItems = []
+    const calculatedItems = []
 
     for (const item of data.items) {
       const service = services.find(s => s.id === item.serviceId)
@@ -166,7 +167,7 @@ export async function POST(request: Request) {
       })
     }
 
-    let subtotalAfterDiscount = totalSubtotal - totalDiscount
+    const subtotalAfterDiscount = totalSubtotal - totalDiscount
 
     // 쿠폰 할인 계산
     let couponDiscount = 0
@@ -281,7 +282,7 @@ export async function POST(request: Request) {
     })
 
     return NextResponse.json(createdOrder, { status: 201 })
-  } catch (error) {
+  } catch {
     console.error('주문 생성 오류:', error)
     return NextResponse.json(
       { error: '주문 처리에 실패했습니다.' },

@@ -11,7 +11,7 @@ export async function GET() {
     })
 
     return NextResponse.json(services)
-  } catch (error) {
+  } catch {
     console.error('서비스 조회 오류:', error)
     return NextResponse.json(
       { error: '서비스 정보를 불러오는데 실패했습니다.' },
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     })
 
     return NextResponse.json(service, { status: 201 })
-  } catch (error) {
+  } catch {
     console.error('서비스 생성 오류:', error)
     return NextResponse.json(
       { error: '서비스 생성에 실패했습니다.' },

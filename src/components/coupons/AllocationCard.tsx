@@ -1,6 +1,6 @@
 'use client'
 
-import { User, TrendingUp, RefreshCw, Trash2, Edit2 } from 'lucide-react'
+import { User, RefreshCw, Trash2, Edit2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 
 interface Allocation {

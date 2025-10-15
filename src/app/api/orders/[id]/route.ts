@@ -1,13 +1,15 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { Prisma } from '@prisma/client'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const order = await prisma.order.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         customer: true,
         orderItems: {
@@ -31,7 +33,7 @@ export async function GET(
     }
 
     return NextResponse.json(order)
-  } catch (error) {
+  } catch {
     console.error('주문 조회 오류:', error)
     return NextResponse.json(
       { error: '주문 정보를 불러오는데 실패했습니다.' },
@@ -42,14 +44,15 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const data = await request.json()
 
     // 현재 주문 상태 확인
     const currentOrder = await prisma.order.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!currentOrder) {
@@ -75,7 +78,7 @@ export async function PUT(
     }
 
     // 주문 업데이트
-    const updateData: any = {}
+    const updateData: Prisma.OrderUpdateInput = {}
 
     if (data.status) {
       updateData.status = data.status
@@ -91,7 +94,7 @@ export async function PUT(
     }
 
     const updatedOrder = await prisma.order.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
       include: {
         customer: true,
@@ -109,7 +112,7 @@ export async function PUT(
     })
 
     return NextResponse.json(updatedOrder)
-  } catch (error) {
+  } catch {
     console.error('주문 수정 오류:', error)
     return NextResponse.json(
       { error: '주문 정보 수정에 실패했습니다.' },
@@ -120,12 +123,13 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     // 주문 상태 확인 (완료된 주문은 삭제 불가)
     const order = await prisma.order.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!order) {
@@ -146,22 +150,22 @@ export async function DELETE(
     await prisma.$transaction(async (tx) => {
       // 주문 항목 삭제
       await tx.orderItem.deleteMany({
-        where: { orderId: params.id }
+        where: { orderId: id }
       })
 
       // 주문 추가구성 삭제
       await tx.orderAddOn.deleteMany({
-        where: { orderId: params.id }
+        where: { orderId: id }
       })
 
       // 주문 삭제
       await tx.order.delete({
-        where: { id: params.id }
+        where: { id }
       })
     })
 
     return NextResponse.json({ message: '주문이 삭제되었습니다.' })
-  } catch (error) {
+  } catch {
     console.error('주문 삭제 오류:', error)
     return NextResponse.json(
       { error: '주문 삭제에 실패했습니다.' },

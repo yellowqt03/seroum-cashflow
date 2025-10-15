@@ -84,7 +84,7 @@ export async function GET(
       staffRanking,
       topUsers
     })
-  } catch (error) {
+  } catch {
     console.error('쿠폰 할당 통계 조회 오류:', error)
     return NextResponse.json(
       { error: '통계를 조회하는 중 오류가 발생했습니다.' },

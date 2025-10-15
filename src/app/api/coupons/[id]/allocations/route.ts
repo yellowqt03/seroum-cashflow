@@ -55,7 +55,7 @@ export async function GET(
       coupon,
       allocations: allocationsWithRemaining
     })
-  } catch (error) {
+  } catch {
     console.error('쿠폰 할당 조회 오류:', error)
     return NextResponse.json(
       { error: '쿠폰 할당을 조회하는 중 오류가 발생했습니다.' },

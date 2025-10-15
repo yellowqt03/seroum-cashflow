@@ -3,10 +3,10 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
 
     // 쿠폰 존재 여부 확인
     const coupon = await prisma.coupon.findUnique({
@@ -54,7 +54,7 @@ export async function GET(
       usages: usagesWithCustomer,
       totalUsages: usages.length
     })
-  } catch (error) {
+  } catch {
     console.error('쿠폰 사용 이력 조회 오류:', error)
     return NextResponse.json(
       { error: '쿠폰 사용 이력을 불러오는 중 오류가 발생했습니다.' },

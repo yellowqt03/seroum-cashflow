@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Customer, DISCOUNT_TYPES, PAYMENT_METHODS } from '@/lib/types'
-import { calculateDiscount, simulateDiscount, calculateAdvancedDiscount, calculateOptimalDiscount, OptimalDiscountOption } from '@/lib/discount'
+import { calculateAdvancedDiscount, calculateOptimalDiscount, OptimalDiscountOption } from '@/lib/discount'
 import { formatPrice } from '@/lib/utils'
 import { Calculator, AlertTriangle, CheckCircle, CreditCard, Sparkles, Tag } from 'lucide-react'
 

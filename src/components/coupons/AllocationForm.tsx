@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
+import { useToast } from '@/components/providers/ToastProvider'
 import { X } from 'lucide-react'
 
 interface User {
@@ -22,19 +23,27 @@ interface Allocation {
   note: string | null
 }
 
+interface AllocationFormData {
+  userId: string
+  allocatedAmount: number
+  autoRefresh: boolean
+  refreshPeriod: string
+  note: string
+}
+
 interface AllocationFormProps {
   couponId: string
   allocation?: Allocation
-  onSubmit: (data: any) => Promise<void>
+  onSubmit: (data: AllocationFormData) => Promise<void>
   onCancel: () => void
 }
 
 export function AllocationForm({
-  couponId,
   allocation,
   onSubmit,
   onCancel
 }: AllocationFormProps) {
+  const { showToast } = useToast()
   const [loading, setLoading] = useState(false)
   const [users, setUsers] = useState<User[]>([])
   const [formData, setFormData] = useState({

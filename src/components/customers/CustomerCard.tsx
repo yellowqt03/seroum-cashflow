@@ -23,7 +23,6 @@ export function CustomerCard({ customer, onEdit, onDelete, onSelect, isSelected 
 
   const isBirthdayCustomer = customer.birthDate && isBirthdayMonth(customer.birthDate)
   const currentYear = new Date().getFullYear()
-  const hasUsedBirthdayDiscount = customer.birthdayDiscountYear === currentYear && customer.birthdayUsedCount > 0
 
   return (
     <Card
@@ -44,7 +43,7 @@ export function CustomerCard({ customer, onEdit, onDelete, onSelect, isSelected 
                 <Gift className="h-4 w-4 text-pink-500" />
               )}
             </div>
-            <Badge variant={getDiscountTypeColor(customer.discountType) as any}>
+            <Badge variant={getDiscountTypeColor(customer.discountType) as 'default' | 'secondary' | 'success' | 'danger' | 'warning'}>
               {discountTypeName}
             </Badge>
           </div>

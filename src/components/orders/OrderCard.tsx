@@ -14,14 +14,40 @@ import {
   FileText,
   CheckCircle,
   XCircle,
-  PlayCircle,
-  Pause
+  PlayCircle
 } from 'lucide-react'
 
+interface OrderItem {
+  quantity: number
+  service: {
+    name: string
+  }
+  packageType: string
+  totalPrice: number
+}
+
+interface OrderData {
+  id: string
+  status: string
+  discountAmount: number
+  discountRate?: number
+  subtotal: number
+  finalAmount: number
+  customer: {
+    name: string
+    phone?: string
+  }
+  appliedDiscountType?: string
+  orderItems: OrderItem[]
+  paymentMethod: string
+  notes?: string
+  createdAt: string
+}
+
 interface OrderCardProps {
-  order: any // Order with relations
+  order: OrderData
   onStatusUpdate?: (orderId: string, status: string) => void
-  onViewDetails?: (order: any) => void
+  onViewDetails?: (order: OrderData) => void
 }
 
 export function OrderCard({ order, onStatusUpdate, onViewDetails }: OrderCardProps) {
@@ -44,18 +70,7 @@ export function OrderCard({ order, onStatusUpdate, onViewDetails }: OrderCardPro
     return ['PENDING', 'IN_PROGRESS'].includes(currentStatus)
   }
 
-  const getNextStatus = (currentStatus: string) => {
-    switch (currentStatus) {
-      case 'PENDING':
-        return 'IN_PROGRESS'
-      case 'IN_PROGRESS':
-        return 'COMPLETED'
-      default:
-        return null
-    }
-  }
-
-  const totalItems = order.orderItems.reduce((sum: number, item: any) => sum + item.quantity, 0)
+  const totalItems = order.orderItems.reduce((sum: number, item: OrderItem) => sum + item.quantity, 0)
   const discountApplied = order.discountAmount > 0
 
   return (
@@ -106,7 +121,7 @@ export function OrderCard({ order, onStatusUpdate, onViewDetails }: OrderCardPro
           </div>
 
           {order.appliedDiscountType && order.appliedDiscountType !== 'REGULAR' && (
-            <Badge variant={getDiscountTypeColor(order.appliedDiscountType) as any} className="text-xs">
+            <Badge variant={getDiscountTypeColor(order.appliedDiscountType) as 'default' | 'secondary' | 'success' | 'danger' | 'warning'} className="text-xs">
               {DISCOUNT_TYPES[order.appliedDiscountType as keyof typeof DISCOUNT_TYPES]}
             </Badge>
           )}
@@ -118,7 +133,7 @@ export function OrderCard({ order, onStatusUpdate, onViewDetails }: OrderCardPro
             주문 내역 ({totalItems}개 항목)
           </div>
           <div className="space-y-1">
-            {order.orderItems.slice(0, 2).map((item: any, index: number) => (
+            {order.orderItems.slice(0, 2).map((item: OrderItem, index: number) => (
               <div key={index} className="flex justify-between text-sm">
                 <div className="flex-1">
                   <span className="font-medium">{item.service.name}</span>
@@ -145,7 +160,7 @@ export function OrderCard({ order, onStatusUpdate, onViewDetails }: OrderCardPro
           <div className="bg-green-50 p-3 rounded-lg">
             <div className="text-sm font-medium text-green-800">
               할인 적용: {formatPrice(order.discountAmount)}
-              ({Math.round(order.discountRate * 100)}% 할인)
+              {order.discountRate && `(${Math.round(order.discountRate * 100)}% 할인)`}
             </div>
           </div>
         )}

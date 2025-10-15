@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { SERVICE_CATEGORIES, Service } from '@/lib/types'
+import { useToast } from '@/components/providers/ToastProvider'
 import { X } from 'lucide-react'
 
 interface ServiceFormProps {
@@ -14,6 +15,7 @@ interface ServiceFormProps {
 }
 
 export function ServiceForm({ service, onSubmit, onCancel }: ServiceFormProps) {
+  const { showToast } = useToast()
   const [formData, setFormData] = useState({
     name: service?.name || '',
     category: service?.category || 'IMMUNE_RECOVERY',

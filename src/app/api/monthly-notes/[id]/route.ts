@@ -3,11 +3,11 @@ import { prisma } from '@/lib/prisma'
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { content } = await request.json()
-    const { id } = params
+    const { id } = await params
 
     if (!content) {
       return NextResponse.json(
@@ -25,7 +25,7 @@ export async function PUT(
     })
 
     return NextResponse.json(note)
-  } catch (error) {
+  } catch {
     console.error('월별 특이사항 수정 오류:', error)
     return NextResponse.json(
       { error: '월별 특이사항을 수정하는 중 오류가 발생했습니다.' },
@@ -36,17 +36,17 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
 
     await prisma.monthlyNote.delete({
       where: { id }
     })
 
     return NextResponse.json({ success: true })
-  } catch (error) {
+  } catch {
     console.error('월별 특이사항 삭제 오류:', error)
     return NextResponse.json(
       { error: '월별 특이사항을 삭제하는 중 오류가 발생했습니다.' },

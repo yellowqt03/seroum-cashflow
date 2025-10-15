@@ -49,7 +49,13 @@ export async function PUT(
     }
 
     // 비밀번호 변경 시 해시화
-    const updateData: any = {
+    const updateData: {
+      email: string
+      name: string
+      role: string
+      isActive: boolean
+      password?: string
+    } = {
       email: email || existingUser.email,
       name: name || existingUser.name,
       role: role || existingUser.role,
@@ -82,7 +88,7 @@ export async function PUT(
     })
 
     return NextResponse.json({ user: updatedUser })
-  } catch (error) {
+  } catch {
     console.error('직원 수정 오류:', error)
     return NextResponse.json(
       { error: '직원 수정 중 오류가 발생했습니다.' },
@@ -134,7 +140,7 @@ export async function DELETE(
     })
 
     return NextResponse.json({ message: '직원이 삭제되었습니다.' })
-  } catch (error) {
+  } catch {
     console.error('직원 삭제 오류:', error)
     return NextResponse.json(
       { error: '직원 삭제 중 오류가 발생했습니다.' },

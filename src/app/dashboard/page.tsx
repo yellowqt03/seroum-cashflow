@@ -18,7 +18,7 @@ export default function DashboardPage() {
                   홈으로
                 </Button>
               </Link>
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
                 운영 대시보드
               </h1>
             </div>
@@ -40,11 +40,11 @@ export default function DashboardPage() {
       {/* 메인 콘텐츠 */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* 페이지 헤더 */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">
+        <div className="mb-6 md:mb-8">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2">
             세로움 수액센터 운영 현황
           </h2>
-          <p className="text-gray-600">
+          <p className="text-sm md:text-base text-gray-600">
             실시간 매출, 고객, 주문 현황을 한눈에 확인하고 효율적인 운영을 지원합니다.
           </p>
         </div>

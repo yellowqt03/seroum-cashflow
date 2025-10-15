@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { Prisma } from '@prisma/client'
 
 export async function GET(request: Request) {
   try {
@@ -7,7 +8,7 @@ export async function GET(request: Request) {
     const status = searchParams.get('status') // 'active', 'expired', 'all'
     const search = searchParams.get('search')
 
-    let where: any = {}
+    const where: Prisma.CouponWhereInput = {}
 
     // 상태 필터
     if (status === 'active') {
@@ -64,7 +65,7 @@ export async function GET(request: Request) {
     })
 
     return NextResponse.json(couponsWithStatus)
-  } catch (error) {
+  } catch {
     console.error('쿠폰 조회 오류:', error)
     return NextResponse.json(
       { error: '쿠폰 정보를 불러오는 중 오류가 발생했습니다.' },
@@ -153,7 +154,7 @@ export async function POST(request: Request) {
     })
 
     return NextResponse.json(coupon, { status: 201 })
-  } catch (error) {
+  } catch {
     console.error('쿠폰 생성 오류:', error)
     return NextResponse.json(
       { error: '쿠폰 생성 중 오류가 발생했습니다.' },

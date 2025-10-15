@@ -19,7 +19,17 @@ interface CouponFormProps {
     validUntil: string
     isActive: boolean
   }
-  onSubmit: (data: any) => Promise<void>
+  onSubmit: (data: {
+    name: string
+    discountType: string
+    discountValue: number
+    minAmount: number | null
+    maxDiscount: number | null
+    usageLimit: number | null
+    validFrom: string
+    validUntil: string
+    isActive: boolean
+  }) => Promise<void>
   onCancel: () => void
 }
 
@@ -109,8 +119,8 @@ export function CouponForm({ coupon, onSubmit, onCancel }: CouponFormProps) {
       }
 
       await onSubmit(submitData)
-    } catch (err: any) {
-      setError(err.message || '쿠폰 저장 중 오류가 발생했습니다.')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '쿠폰 저장 중 오류가 발생했습니다.')
     } finally {
       setLoading(false)
     }

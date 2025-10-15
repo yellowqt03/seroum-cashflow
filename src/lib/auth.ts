@@ -31,7 +31,7 @@ export async function getSession(): Promise<User | null> {
     }
 
     return JSON.parse(session.value) as User
-  } catch (error) {
+  } catch {
     return null
   }
 }

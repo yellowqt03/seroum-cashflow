@@ -24,7 +24,6 @@ interface CouponSelectorProps {
 }
 
 export default function CouponSelector({
-  customerId,
   subtotal,
   selectedCouponId,
   onSelectCoupon

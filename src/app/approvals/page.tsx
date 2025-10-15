@@ -34,7 +34,7 @@ interface DiscountApprovalRequest {
     serviceName: string
     packageType: string
     quantity: number
-    addOns: any[]
+    addOns: Array<{ name: string; [key: string]: unknown }>
   }
 }
 
@@ -74,7 +74,7 @@ export default function ApprovalsPage() {
     }
   }
 
-  const handleApprove = async (id: string, adminNote?: string) => {
+  const handleApprove = async (id: string) => {
     try {
       const response = await fetch(`/api/discount-approvals/${id}`, {
         method: 'PUT',
@@ -82,7 +82,7 @@ export default function ApprovalsPage() {
         body: JSON.stringify({
           status: 'APPROVED',
           approvedBy: '관리자', // 실제로는 로그인된 사용자 정보
-          adminNote: adminNote || '승인됨'
+          adminNote: '승인됨'
         })
       })
 
@@ -98,7 +98,7 @@ export default function ApprovalsPage() {
     }
   }
 
-  const handleReject = async (id: string, adminNote?: string) => {
+  const handleReject = async (id: string) => {
     const reason = prompt('거부 사유를 입력해주세요:')
     if (!reason) return
 

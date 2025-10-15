@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { formatDate, formatPrice } from '@/lib/utils'
-import { SERVICE_CATEGORIES, DISCOUNT_TYPES } from '@/lib/types'
+import { DISCOUNT_TYPES } from '@/lib/types'
 import {
   DollarSign,
   Users,
@@ -93,7 +93,7 @@ export function DashboardOverview() {
       // 실제 API 호출 시뮬레이션
       await new Promise(resolve => setTimeout(resolve, 1000))
       setStats(mockStats)
-    } catch (err) {
+    } catch {
       setError('대시보드 데이터를 불러오는데 실패했습니다.')
     } finally {
       setLoading(false)
