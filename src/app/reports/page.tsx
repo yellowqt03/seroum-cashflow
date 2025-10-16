@@ -11,7 +11,7 @@ import { DiscountStatsCard } from '@/components/reports/DiscountStatsCard'
 import { ExcelUpload } from '@/components/reports/ExcelUpload'
 import { exportDiscountStats } from '@/lib/exportExcel'
 import { exportSalesReportToExcel, exportServiceRankingToExcel } from '@/lib/excelUtils'
-import { Download, Calendar, BarChart3 } from 'lucide-react'
+import { Download, Calendar, BarChart3, TrendingUp } from 'lucide-react'
 
 export default function ReportsPage() {
   const { showToast } = useToast()
