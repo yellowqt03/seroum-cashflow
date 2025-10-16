@@ -2,6 +2,7 @@
 import { useToast } from '@/components/providers/ToastProvider'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { Select } from '@/components/ui/Select'
 import { Input } from '@/components/ui/Input'
@@ -11,7 +12,7 @@ import { DiscountStatsCard } from '@/components/reports/DiscountStatsCard'
 import { ExcelUpload } from '@/components/reports/ExcelUpload'
 import { exportDiscountStats } from '@/lib/exportExcel'
 import { exportSalesReportToExcel, exportServiceRankingToExcel } from '@/lib/excelUtils'
-import { Download, Calendar, BarChart3, TrendingUp } from 'lucide-react'
+import { Download, Calendar, BarChart3, TrendingUp, ArrowLeft } from 'lucide-react'
 
 export default function ReportsPage() {
   const { showToast } = useToast()
@@ -107,7 +108,28 @@ export default function ReportsPage() {
   const totalStats = salesData?.totalStats
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-slate-50">
+      {/* Sticky 헤더 */}
+      <header className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <div className="flex items-center space-x-4">
+              <Link href="/dashboard">
+                <Button variant="ghost" size="sm">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  대시보드
+                </Button>
+              </Link>
+              <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
+                매출 리포트
+              </h1>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* 메인 콘텐츠 */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* 헤더 */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
@@ -284,6 +306,7 @@ export default function ReportsPage() {
           <p className="text-gray-500">조회 기간을 선택하고 조회 버튼을 눌러주세요.</p>
         </div>
       )}
+      </main>
     </div>
   )
 }

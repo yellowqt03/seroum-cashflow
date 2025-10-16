@@ -1,10 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { useToast } from '@/components/providers/ToastProvider'
-import { Plus, Edit2, Trash2, Shield, UserCheck, UserX } from 'lucide-react'
+import { Plus, Edit2, Trash2, Shield, UserCheck, UserX, ArrowLeft } from 'lucide-react'
 
 interface User {
   id: string
@@ -156,8 +157,29 @@ export default function UsersPage() {
   }
 
   return (
-    <div className="p-8">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-slate-50">
+      {/* Sticky 헤더 */}
+      <header className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <div className="flex items-center space-x-4">
+              <Link href="/dashboard">
+                <Button variant="ghost" size="sm">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  대시보드
+                </Button>
+              </Link>
+              <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
+                직원 관리
+              </h1>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* 메인 콘텐츠 */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-6xl mx-auto">
         {/* 헤더 */}
         <div className="flex justify-between items-center mb-6">
           <div>
@@ -372,7 +394,8 @@ export default function UsersPage() {
             <strong>참고:</strong> 관리자는 모든 기능에 접근할 수 있으며, 직원은 서비스 조회, 고객 관리, 주문 접수만 가능합니다.
           </p>
         </div>
-      </div>
+        </div>
+      </main>
     </div>
   )
 }

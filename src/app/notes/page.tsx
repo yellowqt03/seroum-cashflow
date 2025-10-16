@@ -2,11 +2,12 @@
 import { useToast } from '@/components/providers/ToastProvider'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { Select } from '@/components/ui/Select'
 import { NotesGrid } from '@/components/notes/NotesGrid'
 import { MonthlyNoteForm } from '@/components/notes/MonthlyNoteForm'
-import { Plus, FileText, Calendar } from 'lucide-react'
+import { Plus, FileText, Calendar, ArrowLeft } from 'lucide-react'
 
 interface MonthlyNote {
   id: string
@@ -140,7 +141,28 @@ export default function NotesPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-slate-50">
+      {/* Sticky 헤더 */}
+      <header className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <div className="flex items-center space-x-4">
+              <Link href="/dashboard">
+                <Button variant="ghost" size="sm">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  대시보드
+                </Button>
+              </Link>
+              <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
+                월별 특이사항 관리
+              </h1>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* 메인 콘텐츠 */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
           <FileText className="h-8 w-8 text-slate-900" />
@@ -201,6 +223,7 @@ export default function NotesPage() {
           />
         </>
       )}
+      </main>
     </div>
   )
 }
