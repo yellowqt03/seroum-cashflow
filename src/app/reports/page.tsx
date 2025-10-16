@@ -2,8 +2,8 @@
 import { useToast } from '@/components/providers/ToastProvider'
 
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
+import { BackButton } from '@/components/ui/BackButton'
 import { Select } from '@/components/ui/Select'
 import { Input } from '@/components/ui/Input'
 import { SalesChart } from '@/components/reports/SalesChart'
@@ -12,7 +12,7 @@ import { DiscountStatsCard } from '@/components/reports/DiscountStatsCard'
 import { ExcelUpload } from '@/components/reports/ExcelUpload'
 import { exportDiscountStats } from '@/lib/exportExcel'
 import { exportSalesReportToExcel, exportServiceRankingToExcel } from '@/lib/excelUtils'
-import { Download, Calendar, BarChart3, TrendingUp, ArrowLeft } from 'lucide-react'
+import { Download, Calendar, BarChart3, TrendingUp } from 'lucide-react'
 
 export default function ReportsPage() {
   const { showToast } = useToast()
@@ -114,12 +114,7 @@ export default function ReportsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-4">
-              <Link href="/dashboard">
-                <Button variant="ghost" size="sm">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  대시보드
-                </Button>
-              </Link>
+              <BackButton label="뒤로" fallbackHref="/dashboard" />
               <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
                 매출 리포트
               </h1>

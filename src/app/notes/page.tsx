@@ -2,12 +2,12 @@
 import { useToast } from '@/components/providers/ToastProvider'
 
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
+import { BackButton } from '@/components/ui/BackButton'
 import { Select } from '@/components/ui/Select'
 import { NotesGrid } from '@/components/notes/NotesGrid'
 import { MonthlyNoteForm } from '@/components/notes/MonthlyNoteForm'
-import { Plus, FileText, Calendar, ArrowLeft } from 'lucide-react'
+import { Plus, FileText, Calendar } from 'lucide-react'
 
 interface MonthlyNote {
   id: string
@@ -147,12 +147,7 @@ export default function NotesPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-4">
-              <Link href="/dashboard">
-                <Button variant="ghost" size="sm">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  대시보드
-                </Button>
-              </Link>
+              <BackButton label="뒤로" fallbackHref="/dashboard" />
               <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
                 월별 특이사항 관리
               </h1>

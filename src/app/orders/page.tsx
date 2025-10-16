@@ -1,7 +1,6 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
+import { BackButton } from '@/components/ui/BackButton'
 import { OrdersGrid } from '@/components/orders/OrdersGrid'
 
 export default function OrdersPage() {
@@ -12,12 +11,7 @@ export default function OrdersPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-4">
-              <Link href="/">
-                <Button variant="ghost" size="sm">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  홈으로
-                </Button>
-              </Link>
+              <BackButton label="뒤로" fallbackHref="/dashboard" />
               <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
                 주문 관리
               </h1>
