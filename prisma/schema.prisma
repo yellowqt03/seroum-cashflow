@@ -60,6 +60,7 @@ model Service {
   updatedAt DateTime @updatedAt
 
   orderItems OrderItem[]
+  packagePurchases PackagePurchase[]
 
   @@map("services")
 }
@@ -99,6 +100,7 @@ model Customer {
 
   orders Order[]
   discountApprovalRequests DiscountApprovalRequest[]
+  packagePurchases PackagePurchase[]
 
   @@map("customers")
 }
@@ -136,6 +138,7 @@ model Order {
 
   orderItems  OrderItem[]
   orderAddOns OrderAddOn[]
+  packageUsages PackageUsage[]
 
   @@map("orders")
 }
@@ -154,6 +157,8 @@ model OrderItem {
   totalPrice    Int     // 총 가격
 
   createdAt DateTime @default(now())
+
+  packageUsages PackageUsage[]
 
   @@map("order_items")
 }
@@ -329,4 +334,57 @@ model DiscountApprovalRequest {
   updatedAt DateTime @updatedAt
 
   @@map("discount_approval_requests")
+}
+
+// 패키지 구매 이력
+model PackagePurchase {
+  id            String   @id @default(cuid())
+  customerId    String
+  customer      Customer @relation(fields: [customerId], references: [id])
+  serviceId     String
+  service       Service  @relation(fields: [serviceId], references: [id])
+
+  // 패키지 정보
+  packageType   String   // "package4", "package8", "package10"
+  totalCount    Int      // 총 횟수 (4, 8, 10)
+  remainingCount Int     // 남은 횟수
+  purchasePrice Int      // 구매 가격
+
+  // 구매 정보
+  orderId       String?  // 연결된 주문 ID (패키지 구매 시 생성된 주문)
+  purchasedAt   DateTime @default(now()) // 구매일
+  expiresAt     DateTime? // 만료일 (옵션)
+
+  // 상태
+  status        String   @default("ACTIVE") // ACTIVE, COMPLETED, EXPIRED, CANCELLED
+
+  // 메모
+  notes         String?  // 특이사항
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  packageUsages PackageUsage[]
+
+  @@map("package_purchases")
+}
+
+// 패키지 사용 이력
+model PackageUsage {
+  id                 String          @id @default(cuid())
+  packagePurchaseId  String
+  packagePurchase    PackagePurchase @relation(fields: [packagePurchaseId], references: [id])
+
+  // 사용 정보
+  orderId     String
+  order       Order      @relation(fields: [orderId], references: [id])
+  orderItemId String
+  orderItem   OrderItem  @relation(fields: [orderItemId], references: [id])
+
+  usedCount   Int        // 사용한 횟수 (보통 1)
+  usedAt      DateTime   @default(now()) // 사용일
+
+  createdAt DateTime @default(now())
+
+  @@map("package_usages")
 }

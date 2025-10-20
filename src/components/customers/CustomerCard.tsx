@@ -1,13 +1,14 @@
 'use client'
 
 import React from 'react'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { formatDate, formatPhoneNumber, isBirthdayMonth } from '@/lib/utils'
 import { DISCOUNT_TYPES, CUSTOMER_SOURCES, Customer } from '@/lib/types'
 import { getDiscountTypeColor } from '@/lib/discount'
-import { Edit, Phone, Calendar, MapPin, Gift, Crown, Trash2 } from 'lucide-react'
+import { Edit, Phone, Calendar, MapPin, Gift, Crown, Trash2, Package } from 'lucide-react'
 
 interface CustomerCardProps {
   customer: Customer
@@ -18,18 +19,27 @@ interface CustomerCardProps {
 }
 
 export function CustomerCard({ customer, onEdit, onDelete, onSelect, isSelected = false }: CustomerCardProps) {
+  const router = useRouter()
   const discountTypeName = DISCOUNT_TYPES[customer.discountType as keyof typeof DISCOUNT_TYPES] || customer.discountType
   const sourceName = CUSTOMER_SOURCES[customer.source as keyof typeof CUSTOMER_SOURCES] || customer.source
 
   const isBirthdayCustomer = customer.birthDate && isBirthdayMonth(customer.birthDate)
   const currentYear = new Date().getFullYear()
 
+  const handleCardClick = () => {
+    if (onSelect) {
+      onSelect(customer)
+    } else {
+      router.push(`/customers/${customer.id}`)
+    }
+  }
+
   return (
     <Card
       className={`cursor-pointer transition-all hover:shadow-md ${
         isSelected ? 'ring-2 ring-blue-500 shadow-md' : ''
       } ${isBirthdayCustomer ? 'bg-pink-50' : ''}`}
-      onClick={() => onSelect?.(customer)}
+      onClick={handleCardClick}
     >
       <CardHeader className="pb-4">
         <div className="flex items-start justify-between">

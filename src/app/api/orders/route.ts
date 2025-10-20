@@ -211,14 +211,54 @@ export async function POST(request: Request) {
         }
       })
 
-      // 주문 항목 생성
+      // 주문 항목 생성 및 패키지 사용 처리
       for (const item of calculatedItems) {
-        await tx.orderItem.create({
+        const orderItem = await tx.orderItem.create({
           data: {
             orderId: order.id,
             ...item
           }
         })
+
+        // 패키지 사용 처리: 고객의 활성 패키지가 있는지 확인
+        const activePackage = await tx.packagePurchase.findFirst({
+          where: {
+            customerId: customer.id,
+            serviceId: item.serviceId,
+            status: 'ACTIVE',
+            remainingCount: {
+              gt: 0
+            }
+          },
+          orderBy: {
+            purchasedAt: 'asc' // 오래된 패키지부터 사용
+          }
+        })
+
+        if (activePackage && item.quantity > 0) {
+          // 사용할 횟수 계산 (패키지 남은 횟수와 주문 수량 중 작은 값)
+          const usedCount = Math.min(activePackage.remainingCount, item.quantity)
+
+          // 패키지 사용 이력 생성
+          await tx.packageUsage.create({
+            data: {
+              packagePurchaseId: activePackage.id,
+              orderId: order.id,
+              orderItemId: orderItem.id,
+              usedCount: usedCount
+            }
+          })
+
+          // 패키지 남은 횟수 차감
+          const newRemainingCount = activePackage.remainingCount - usedCount
+          await tx.packagePurchase.update({
+            where: { id: activePackage.id },
+            data: {
+              remainingCount: newRemainingCount,
+              status: newRemainingCount === 0 ? 'COMPLETED' : 'ACTIVE'
+            }
+          })
+        }
       }
 
       // 생일자 할인 사용 횟수 업데이트
