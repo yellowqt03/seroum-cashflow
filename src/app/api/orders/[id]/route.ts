@@ -77,41 +77,63 @@ export async function PUT(
       )
     }
 
-    // 주문 업데이트
-    const updateData: Prisma.OrderUpdateInput = {}
+    // 주문 업데이트 및 방문 기록 생성 (트랜잭션)
+    const result = await prisma.$transaction(async (tx) => {
+      const updateData: Prisma.OrderUpdateInput = {}
 
-    if (data.status) {
-      updateData.status = data.status
+      if (data.status) {
+        updateData.status = data.status
 
-      // 완료 시간 기록
-      if (data.status === 'COMPLETED') {
-        updateData.completedAt = new Date()
-      }
-    }
-
-    if (data.notes !== undefined) {
-      updateData.notes = data.notes
-    }
-
-    const updatedOrder = await prisma.order.update({
-      where: { id },
-      data: updateData,
-      include: {
-        customer: true,
-        orderItems: {
-          include: {
-            service: true
-          }
-        },
-        orderAddOns: {
-          include: {
-            addOn: true
-          }
+        // 완료 시간 기록
+        if (data.status === 'COMPLETED') {
+          updateData.completedAt = new Date()
         }
       }
+
+      if (data.notes !== undefined) {
+        updateData.notes = data.notes
+      }
+
+      const updatedOrder = await tx.order.update({
+        where: { id },
+        data: updateData,
+        include: {
+          customer: true,
+          orderItems: {
+            include: {
+              service: true
+            }
+          },
+          orderAddOns: {
+            include: {
+              addOn: true
+            }
+          }
+        }
+      })
+
+      // 주문이 완료 상태가 되면 자동으로 방문 기록 생성
+      if (data.status === 'COMPLETED' && currentOrder.status !== 'COMPLETED') {
+        // 이미 방문 기록이 있는지 확인
+        const existingVisit = await tx.visit.findUnique({
+          where: { orderId: id }
+        })
+
+        if (!existingVisit) {
+          await tx.visit.create({
+            data: {
+              customerId: updatedOrder.customerId,
+              orderId: id,
+              visitDate: updatedOrder.completedAt || new Date()
+            }
+          })
+        }
+      }
+
+      return updatedOrder
     })
 
-    return NextResponse.json(updatedOrder)
+    return NextResponse.json(result)
   } catch {
     console.error('주문 수정 오류:', error)
     return NextResponse.json(

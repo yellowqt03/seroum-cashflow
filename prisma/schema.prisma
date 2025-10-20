@@ -101,6 +101,7 @@ model Customer {
   orders Order[]
   discountApprovalRequests DiscountApprovalRequest[]
   packagePurchases PackagePurchase[]
+  visits Visit[]
 
   @@map("customers")
 }
@@ -139,6 +140,7 @@ model Order {
   orderItems  OrderItem[]
   orderAddOns OrderAddOn[]
   packageUsages PackageUsage[]
+  visit Visit?
 
   @@map("orders")
 }
@@ -387,4 +389,25 @@ model PackageUsage {
   createdAt DateTime @default(now())
 
   @@map("package_usages")
+}
+
+// 고객 방문 기록
+model Visit {
+  id         String    @id @default(cuid())
+  customerId String
+  customer   Customer  @relation(fields: [customerId], references: [id])
+
+  // 방문 정보
+  visitDate  DateTime  @default(now()) // 방문 일시
+  orderId    String?   @unique // 연결된 주문 ID (옵션)
+  order      Order?    @relation(fields: [orderId], references: [id])
+
+  // 부가 정보
+  notes      String?   // 메모
+
+  createdAt DateTime @default(now())
+
+  @@map("visits")
+  @@index([customerId, visitDate])
+  @@index([visitDate])
 }

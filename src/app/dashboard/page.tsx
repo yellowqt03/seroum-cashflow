@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
-import { BarChart3, Users, ShoppingBag, Settings } from 'lucide-react'
+import { BarChart3, Users, ShoppingBag, Settings, Calendar } from 'lucide-react'
 import { BackButton } from '@/components/ui/BackButton'
 import { DashboardOverview } from '@/components/dashboard/DashboardOverview'
 
@@ -45,7 +45,7 @@ export default function DashboardPage() {
         </div>
 
         {/* 빠른 액션 카드 */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
           <Link href="/orders" className="group">
             <div className="bg-white p-6 rounded-lg border border-slate-200 hover:shadow-md transition-all group-hover:scale-105">
               <div className="flex items-center space-x-3">
@@ -83,6 +83,20 @@ export default function DashboardPage() {
                 <div>
                   <h3 className="font-medium text-gray-900">서비스 관리</h3>
                   <p className="text-sm text-gray-600">가격 및 패키지</p>
+                </div>
+              </div>
+            </div>
+          </Link>
+
+          <Link href="/visits" className="group">
+            <div className="bg-white p-6 rounded-lg border border-slate-200 hover:shadow-md transition-all group-hover:scale-105">
+              <div className="flex items-center space-x-3">
+                <div className="bg-orange-100 p-2 rounded-lg">
+                  <Calendar className="h-6 w-6 text-orange-600" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-900">방문 관리</h3>
+                  <p className="text-sm text-gray-600">고객 방문 현황</p>
                 </div>
               </div>
             </div>
