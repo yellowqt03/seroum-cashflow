@@ -13,8 +13,6 @@ export type ServiceCategory = keyof typeof SERVICE_CATEGORIES
 
 // 할인 유형
 export const DISCOUNT_TYPES = {
-  VIP: 'VIP 고객',
-  BIRTHDAY: '생일자',
   EMPLOYEE: '직원',
   REGULAR: '일반 고객'
 } as const

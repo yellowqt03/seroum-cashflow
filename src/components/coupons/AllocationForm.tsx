@@ -63,7 +63,7 @@ export function AllocationForm({
       const response = await fetch('/api/users')
       if (response.ok) {
         const data = await response.json()
-        setUsers(data.filter((u: User) => u.role === 'STAFF'))
+        setUsers(data.users.filter((u: User) => u.role === 'STAFF'))
       }
     } catch (error) {
       console.error('직원 목록 조회 오류:', error)

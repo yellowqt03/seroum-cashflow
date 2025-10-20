@@ -86,7 +86,7 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
         <Button
           variant="outline"
           size="sm"
-          onClick={() => router.push('/coupons')}
+          onClick={() => router.replace('/coupons')}
           className="mb-4"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />

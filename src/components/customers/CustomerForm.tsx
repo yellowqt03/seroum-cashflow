@@ -173,22 +173,11 @@ export function CustomerForm({ customer, onSubmit, onCancel, loading = false }: 
           </div>
 
           {/* 할인 안내 */}
-          {formData.discountType !== 'REGULAR' && (
+          {formData.discountType === 'EMPLOYEE' && (
             <div className="bg-slate-50 p-4 rounded-lg">
               <h4 className="text-sm font-medium text-slate-900 mb-2">할인 혜택 안내</h4>
               <div className="text-sm text-slate-900">
-                {formData.discountType === 'VIP' && (
-                  <p>• VIP 전용 서비스 무료 이용</p>
-                )}
-                {formData.discountType === 'BIRTHDAY' && (
-                  <>
-                    <p>• 프리미엄회복, 프리미엄면역 50% 할인</p>
-                    <p>• 연간 8회까지 사용 가능</p>
-                  </>
-                )}
-                {formData.discountType === 'EMPLOYEE' && (
-                  <p>• 모든 서비스 50% 할인</p>
-                )}
+                <p>• 모든 서비스 50% 할인</p>
               </div>
             </div>
           )}
