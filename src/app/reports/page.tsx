@@ -7,6 +7,9 @@ import { BackButton } from '@/components/ui/BackButton'
 import { Select } from '@/components/ui/Select'
 import { Input } from '@/components/ui/Input'
 import { SalesChart } from '@/components/reports/SalesChart'
+import { CategoryPieChart } from '@/components/reports/CategoryPieChart'
+import { ServiceRankingChart } from '@/components/reports/ServiceRankingChart'
+import { DiscountDonutChart } from '@/components/reports/DiscountDonutChart'
 import { TopServicesTable } from '@/components/reports/TopServicesTable'
 import { DiscountStatsCard } from '@/components/reports/DiscountStatsCard'
 import { ExcelUpload } from '@/components/reports/ExcelUpload'
@@ -262,6 +265,19 @@ export default function ReportsPage() {
             </div>
           )}
 
+          {/* 카테고리별 매출 차트 */}
+          {salesData?.salesByCategory && salesData.salesByCategory.length > 0 && (
+            <div className="mb-8">
+              <CategoryPieChart
+                data={salesData.salesByCategory.map((item: any) => ({
+                  category: item.category,
+                  total: item.totalSales,
+                  count: item.orderCount
+                }))}
+              />
+            </div>
+          )}
+
           {/* 할인 통계 */}
           {salesData?.discountStats && (
             <div className="mb-8">
@@ -272,7 +288,29 @@ export default function ReportsPage() {
                   CSV 다운로드
                 </Button>
               </div>
-              <DiscountStatsCard stats={salesData.discountStats} />
+              <div className="space-y-6">
+                <DiscountDonutChart
+                  stats={{
+                    vipDiscount: {
+                      count: salesData.discountStats.vip.count,
+                      total: salesData.discountStats.vip.totalDiscount
+                    },
+                    birthdayDiscount: {
+                      count: salesData.discountStats.birthday.count,
+                      total: salesData.discountStats.birthday.totalDiscount
+                    },
+                    employeeDiscount: {
+                      count: salesData.discountStats.employee.count,
+                      total: salesData.discountStats.employee.totalDiscount
+                    },
+                    packageDiscount: {
+                      count: salesData.discountStats.package.count,
+                      total: salesData.discountStats.package.totalDiscount
+                    }
+                  }}
+                />
+                <DiscountStatsCard stats={salesData.discountStats} />
+              </div>
             </div>
           )}
 
@@ -286,10 +324,16 @@ export default function ReportsPage() {
                   CSV 다운로드
                 </Button>
               </div>
-              <TopServicesTable
-                services={servicesData.topServices}
-                title="TOP 20 인기 서비스"
-              />
+              <div className="space-y-6">
+                <ServiceRankingChart
+                  data={servicesData.topServices}
+                  limit={10}
+                />
+                <TopServicesTable
+                  services={servicesData.topServices}
+                  title="TOP 20 인기 서비스"
+                />
+              </div>
             </div>
           )}
         </>

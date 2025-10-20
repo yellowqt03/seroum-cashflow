@@ -1,5 +1,18 @@
 'use client'
 
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts'
+
 interface SalesChartProps {
   data: Array<{
     period: string
@@ -8,9 +21,10 @@ interface SalesChartProps {
     totalDiscount: number
     orderCount: number
   }>
+  period?: string
 }
 
-export function SalesChart({ data }: SalesChartProps) {
+export function SalesChart({ data, period = 'month' }: SalesChartProps) {
   if (!data || data.length === 0) {
     return (
       <div className="bg-white rounded-lg border p-6">
@@ -18,9 +32,6 @@ export function SalesChart({ data }: SalesChartProps) {
       </div>
     )
   }
-
-  // 최대값 계산 (차트 스케일링용)
-  const maxSales = Math.max(...data.map(d => d.totalSales))
 
   // 기간별 라벨 포맷
   const formatLabel = (period: string) => {
@@ -35,65 +46,149 @@ export function SalesChart({ data }: SalesChartProps) {
     return period
   }
 
+  // 차트용 데이터 포맷팅
+  const chartData = data.map(item => ({
+    name: formatLabel(item.period),
+    '할인 전 매출': item.totalSales,
+    '순 매출': item.netSales,
+    '할인': item.totalDiscount,
+    '주문 수': item.orderCount,
+  }))
+
+  // 금액 포맷팅 (천 단위 구분)
+  const formatCurrency = (value: number) => {
+    if (value >= 10000000) {
+      return `${(value / 10000000).toFixed(1)}천만`
+    } else if (value >= 1000000) {
+      return `${(value / 1000000).toFixed(1)}백만`
+    } else if (value >= 10000) {
+      return `${(value / 10000).toFixed(0)}만`
+    }
+    return value.toLocaleString()
+  }
+
+  // 툴팁 커스텀
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-4 rounded-lg shadow-lg border border-slate-200">
+          <p className="font-semibold text-gray-900 mb-2">{label}</p>
+          {payload.map((entry: any, index: number) => (
+            <p key={index} className="text-sm" style={{ color: entry.color }}>
+              {entry.name}: {entry.value.toLocaleString()}원
+            </p>
+          ))}
+          {payload[0]?.payload?.['주문 수'] && (
+            <p className="text-sm text-gray-600 mt-1 pt-1 border-t">
+              주문: {payload[0].payload['주문 수']}건
+            </p>
+          )}
+        </div>
+      )
+    }
+    return null
+  }
+
+  // 기간에 따라 라인차트 또는 바차트 선택
+  const useLineChart = data.length > 7
+
   return (
     <div className="bg-white rounded-lg border p-6">
       <h3 className="text-lg font-semibold text-gray-900 mb-6">기간별 매출 추이</h3>
 
-      {/* 간단한 바 차트 */}
-      <div className="space-y-4">
-        {data.map((item, index) => {
-          const salesBarWidth = maxSales > 0 ? (item.netSales / maxSales) * 100 : 0
+      <ResponsiveContainer width="100%" height={400}>
+        {useLineChart ? (
+          <LineChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+            <XAxis
+              dataKey="name"
+              stroke="#64748b"
+              style={{ fontSize: '12px' }}
+            />
+            <YAxis
+              stroke="#64748b"
+              style={{ fontSize: '12px' }}
+              tickFormatter={formatCurrency}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend
+              wrapperStyle={{ fontSize: '14px' }}
+              iconType="line"
+            />
+            <Line
+              type="monotone"
+              dataKey="할인 전 매출"
+              stroke="#94a3b8"
+              strokeWidth={2}
+              dot={{ fill: '#94a3b8', r: 4 }}
+              activeDot={{ r: 6 }}
+            />
+            <Line
+              type="monotone"
+              dataKey="순 매출"
+              stroke="#0f172a"
+              strokeWidth={3}
+              dot={{ fill: '#0f172a', r: 4 }}
+              activeDot={{ r: 6 }}
+            />
+          </LineChart>
+        ) : (
+          <BarChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+            <XAxis
+              dataKey="name"
+              stroke="#64748b"
+              style={{ fontSize: '12px' }}
+            />
+            <YAxis
+              stroke="#64748b"
+              style={{ fontSize: '12px' }}
+              tickFormatter={formatCurrency}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend
+              wrapperStyle={{ fontSize: '14px' }}
+              iconType="square"
+            />
+            <Bar
+              dataKey="할인 전 매출"
+              fill="#cbd5e1"
+              radius={[4, 4, 0, 0]}
+            />
+            <Bar
+              dataKey="순 매출"
+              fill="#0f172a"
+              radius={[4, 4, 0, 0]}
+            />
+          </BarChart>
+        )}
+      </ResponsiveContainer>
 
-          return (
-            <div key={index} className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="font-medium text-gray-700 min-w-[100px]">
-                  {formatLabel(item.period)}
-                </span>
-                <div className="flex items-center gap-4 text-xs text-gray-600">
-                  <span>매출: {item.netSales.toLocaleString()}원</span>
-                  <span>주문: {item.orderCount}건</span>
-                </div>
-              </div>
-
-              <div className="relative h-8 bg-gray-100 rounded-lg overflow-hidden">
-                {/* 할인 전 매출 (연한 배경) */}
-                <div
-                  className="absolute h-full bg-blue-200 rounded-lg transition-all"
-                  style={{ width: `${(item.totalSales / maxSales) * 100}%` }}
-                />
-                {/* 실제 매출 (진한 색) */}
-                <div
-                  className="absolute h-full bg-blue-600 rounded-lg transition-all"
-                  style={{ width: `${salesBarWidth}%` }}
-                />
-                {/* 값 표시 */}
-                <div className="absolute inset-0 flex items-center px-3">
-                  <span className="text-xs font-medium text-white">
-                    {item.netSales.toLocaleString()}원
-                  </span>
-                </div>
-              </div>
-
-              {item.totalDiscount > 0 && (
-                <div className="text-xs text-red-600 pl-[100px]">
-                  할인: -{item.totalDiscount.toLocaleString()}원
-                </div>
-              )}
-            </div>
-          )
-        })}
-      </div>
-
-      {/* 범례 */}
-      <div className="flex items-center gap-6 mt-6 pt-4 border-t text-sm">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-blue-200 rounded"></div>
-          <span className="text-gray-600">할인 전 매출</span>
+      {/* 통계 요약 */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-4 border-t">
+        <div>
+          <p className="text-xs text-gray-500 mb-1">총 매출</p>
+          <p className="text-lg font-semibold text-gray-900">
+            {data.reduce((sum, item) => sum + item.totalSales, 0).toLocaleString()}원
+          </p>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-blue-600 rounded"></div>
-          <span className="text-gray-600">순 매출</span>
+        <div>
+          <p className="text-xs text-gray-500 mb-1">총 할인</p>
+          <p className="text-lg font-semibold text-red-600">
+            -{data.reduce((sum, item) => sum + item.totalDiscount, 0).toLocaleString()}원
+          </p>
+        </div>
+        <div>
+          <p className="text-xs text-gray-500 mb-1">순 매출</p>
+          <p className="text-lg font-semibold text-slate-900">
+            {data.reduce((sum, item) => sum + item.netSales, 0).toLocaleString()}원
+          </p>
+        </div>
+        <div>
+          <p className="text-xs text-gray-500 mb-1">총 주문</p>
+          <p className="text-lg font-semibold text-gray-900">
+            {data.reduce((sum, item) => sum + item.orderCount, 0)}건
+          </p>
         </div>
       </div>
     </div>
