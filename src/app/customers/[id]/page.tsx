@@ -7,6 +7,8 @@ import { BackButton } from '@/components/ui/BackButton'
 import { Button } from '@/components/ui/Button'
 import { PackageList } from '@/components/customers/PackageList'
 import { PackagePurchaseForm } from '@/components/customers/PackagePurchaseForm'
+import { OrderHistory } from '@/components/customers/OrderHistory'
+import { CustomerStatistics } from '@/components/customers/CustomerStatistics'
 import {
   User,
   Phone,
@@ -271,19 +273,11 @@ export default function CustomerDetailPage() {
         )}
 
         {activeTab === 'orders' && (
-          <div className="bg-white rounded-lg border p-6">
-            <p className="text-gray-500 text-center py-12">
-              주문 내역 기능은 준비 중입니다.
-            </p>
-          </div>
+          <OrderHistory customerId={customerId} />
         )}
 
         {activeTab === 'info' && (
-          <div className="bg-white rounded-lg border p-6">
-            <p className="text-gray-500 text-center py-12">
-              통계 기능은 준비 중입니다.
-            </p>
-          </div>
+          <CustomerStatistics customerId={customerId} />
         )}
       </main>
 
