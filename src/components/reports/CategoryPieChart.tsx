@@ -75,7 +75,10 @@ export function CategoryPieChart({ data }: CategoryPieChartProps) {
 
   // 커스텀 라벨
   const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
-    if (percent < 0.05) return null // 5% 미만은 라벨 숨김
+    // 안전성 검사
+    if (!percent || typeof percent !== 'number' || isNaN(percent) || percent < 0.05) {
+      return null // 5% 미만이거나 유효하지 않은 값은 라벨 숨김
+    }
 
     const RADIAN = Math.PI / 180
     const radius = outerRadius + 25

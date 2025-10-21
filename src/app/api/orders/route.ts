@@ -192,6 +192,22 @@ export async function POST(request: Request) {
 
     const finalAmount = subtotalAfterDiscount - couponDiscount
 
+    // 중복 할인 체크 (쿠폰 + 고객 할인)
+    const hasCustomerDiscount = customer.discountType !== 'REGULAR' && totalDiscount > 0
+    const hasCouponDiscount = couponDiscount > 0
+
+    if (hasCustomerDiscount && hasCouponDiscount) {
+      // 중복 할인이 발생하는 경우 승인 요청 생성
+      return NextResponse.json(
+        {
+          error: '중복 할인 사용',
+          message: '고객 할인과 쿠폰 할인을 동시에 사용할 수 없습니다. 하나만 선택해주세요.',
+          requiresApproval: true
+        },
+        { status: 400 }
+      )
+    }
+
     // 트랜잭션으로 주문 생성
     const result = await prisma.$transaction(async (tx) => {
       // 주문 생성
@@ -211,54 +227,14 @@ export async function POST(request: Request) {
         }
       })
 
-      // 주문 항목 생성 및 패키지 사용 처리
+      // 주문 항목 생성 (패키지 사용은 주문 완료 시점에 처리)
       for (const item of calculatedItems) {
-        const orderItem = await tx.orderItem.create({
+        await tx.orderItem.create({
           data: {
             orderId: order.id,
             ...item
           }
         })
-
-        // 패키지 사용 처리: 고객의 활성 패키지가 있는지 확인
-        const activePackage = await tx.packagePurchase.findFirst({
-          where: {
-            customerId: customer.id,
-            serviceId: item.serviceId,
-            status: 'ACTIVE',
-            remainingCount: {
-              gt: 0
-            }
-          },
-          orderBy: {
-            purchasedAt: 'asc' // 오래된 패키지부터 사용
-          }
-        })
-
-        if (activePackage && item.quantity > 0) {
-          // 사용할 횟수 계산 (패키지 남은 횟수와 주문 수량 중 작은 값)
-          const usedCount = Math.min(activePackage.remainingCount, item.quantity)
-
-          // 패키지 사용 이력 생성
-          await tx.packageUsage.create({
-            data: {
-              packagePurchaseId: activePackage.id,
-              orderId: order.id,
-              orderItemId: orderItem.id,
-              usedCount: usedCount
-            }
-          })
-
-          // 패키지 남은 횟수 차감
-          const newRemainingCount = activePackage.remainingCount - usedCount
-          await tx.packagePurchase.update({
-            where: { id: activePackage.id },
-            data: {
-              remainingCount: newRemainingCount,
-              status: newRemainingCount === 0 ? 'COMPLETED' : 'ACTIVE'
-            }
-          })
-        }
       }
 
       // 생일자 할인 사용 횟수 업데이트

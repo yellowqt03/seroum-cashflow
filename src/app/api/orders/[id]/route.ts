@@ -112,9 +112,9 @@ export async function PUT(
         }
       })
 
-      // 주문이 완료 상태가 되면 자동으로 방문 기록 생성
+      // 주문이 완료 상태가 되면 자동으로 방문 기록 생성 및 패키지 차감
       if (data.status === 'COMPLETED' && currentOrder.status !== 'COMPLETED') {
-        // 이미 방문 기록이 있는지 확인
+        // 1. 방문 기록 생성
         const existingVisit = await tx.visit.findUnique({
           where: { orderId: id }
         })
@@ -127,6 +127,62 @@ export async function PUT(
               visitDate: updatedOrder.completedAt || new Date()
             }
           })
+        }
+
+        // 2. 패키지 사용 처리
+        const orderItems = await tx.orderItem.findMany({
+          where: { orderId: id },
+          include: { service: true }
+        })
+
+        for (const orderItem of orderItems) {
+          // 고객의 활성 패키지 찾기
+          const activePackage = await tx.packagePurchase.findFirst({
+            where: {
+              customerId: updatedOrder.customerId,
+              serviceId: orderItem.serviceId,
+              status: 'ACTIVE',
+              remainingCount: { gt: 0 }
+            },
+            orderBy: {
+              purchasedAt: 'asc' // 오래된 패키지부터 사용
+            }
+          })
+
+          if (activePackage && orderItem.quantity > 0) {
+            // 이미 사용 기록이 있는지 확인 (중복 방지)
+            const existingUsage = await tx.packageUsage.findFirst({
+              where: {
+                orderId: id,
+                orderItemId: orderItem.id
+              }
+            })
+
+            if (!existingUsage) {
+              // 사용할 횟수 계산
+              const usedCount = Math.min(activePackage.remainingCount, orderItem.quantity)
+
+              // 패키지 사용 이력 생성
+              await tx.packageUsage.create({
+                data: {
+                  packagePurchaseId: activePackage.id,
+                  orderId: id,
+                  orderItemId: orderItem.id,
+                  usedCount: usedCount
+                }
+              })
+
+              // 패키지 남은 횟수 차감
+              const newRemainingCount = activePackage.remainingCount - usedCount
+              await tx.packagePurchase.update({
+                where: { id: activePackage.id },
+                data: {
+                  remainingCount: newRemainingCount,
+                  status: newRemainingCount === 0 ? 'COMPLETED' : 'ACTIVE'
+                }
+              })
+            }
+          }
         }
       }
 
