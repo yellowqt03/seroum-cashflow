@@ -23,14 +23,14 @@ export function ServiceRankingChart({ data, limit = 10 }: ServiceRankingChartPro
   // TOP N 개만 표시
   const topServices = data.slice(0, limit)
 
-  // 차트용 데이터 포맷팅
+  // 차트용 데이터 포맷팅 (안전성 검사 추가)
   const chartData = topServices.map((item, index) => ({
-    name: item.serviceName.length > 15
+    name: item.serviceName && item.serviceName.length > 15
       ? item.serviceName.substring(0, 15) + '...'
-      : item.serviceName,
-    fullName: item.serviceName,
-    count: item.totalCount,
-    revenue: item.totalRevenue,
+      : (item.serviceName || 'Unknown'),
+    fullName: item.serviceName || 'Unknown',
+    count: item.totalCount || 0,
+    revenue: item.totalRevenue || 0,
     rank: index + 1,
   }))
 
@@ -58,13 +58,13 @@ export function ServiceRankingChart({ data, limit = 10 }: ServiceRankingChartPro
       return (
         <div className="bg-white p-4 rounded-lg shadow-lg border border-slate-200">
           <p className="font-semibold text-gray-900 mb-2">
-            {data.rank}위. {data.fullName}
+            {data.rank || 0}위. {data.fullName || 'Unknown'}
           </p>
           <p className="text-sm text-gray-700">
-            판매: {data.count}건
+            판매: {data.count || 0}건
           </p>
           <p className="text-sm text-gray-700">
-            매출: {data.revenue.toLocaleString()}원
+            매출: {(data.revenue || 0).toLocaleString()}원
           </p>
         </div>
       )
@@ -126,10 +126,10 @@ export function ServiceRankingChart({ data, limit = 10 }: ServiceRankingChartPro
               <span className="text-xs text-gray-500">위</span>
             </div>
             <p className="text-sm font-semibold text-gray-900 mb-1">
-              {item.serviceName}
+              {item.serviceName || 'Unknown'}
             </p>
             <p className="text-xs text-gray-600">
-              {item.totalCount}건 • {item.totalRevenue.toLocaleString()}원
+              {item.totalCount || 0}건 • {(item.totalRevenue || 0).toLocaleString()}원
             </p>
           </div>
         ))}

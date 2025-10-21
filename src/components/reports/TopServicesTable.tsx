@@ -84,30 +84,30 @@ export function TopServicesTable({ services, title = "서비스별 판매 순위
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <div className="text-sm font-medium text-gray-900">{service.serviceName}</div>
+                  <div className="text-sm font-medium text-gray-900">{service.serviceName || 'Unknown'}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-slate-900">
-                    {getCategoryName(service.category)}
+                    {getCategoryName(service.category || '')}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right">
                   <div className="text-sm font-semibold text-gray-900">
-                    {service.totalSales.toLocaleString()}원
+                    {(service.totalSales || 0).toLocaleString()}원
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right">
-                  <div className="text-sm text-gray-900">{service.totalQuantity}개</div>
+                  <div className="text-sm text-gray-900">{service.totalQuantity || 0}개</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right">
-                  <div className="text-sm text-gray-900">{service.orderCount}건</div>
+                  <div className="text-sm text-gray-900">{service.orderCount || 0}건</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right">
-                  <div className="text-sm text-gray-900">{service.uniqueCustomers}명</div>
+                  <div className="text-sm text-gray-900">{service.uniqueCustomers || 0}명</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right">
                   <div className="text-sm text-gray-600">
-                    {service.avgSalesPerOrder.toLocaleString()}원
+                    {(service.avgSalesPerOrder || 0).toLocaleString()}원
                   </div>
                 </td>
               </tr>

@@ -208,7 +208,7 @@ export default function ReportsPage() {
                 <TrendingUp className="h-5 w-5 text-slate-900" />
               </div>
               <p className="text-2xl font-bold text-gray-900">
-                {totalStats.totalSales.toLocaleString()}원
+                {(totalStats.totalSales || 0).toLocaleString()}원
               </p>
               <p className="text-xs text-gray-500 mt-1">할인 전 금액</p>
             </div>
@@ -219,10 +219,10 @@ export default function ReportsPage() {
                 <TrendingUp className="h-5 w-5 text-red-600" />
               </div>
               <p className="text-2xl font-bold text-red-600">
-                -{totalStats.totalDiscount.toLocaleString()}원
+                -{(totalStats.totalDiscount || 0).toLocaleString()}원
               </p>
               <p className="text-xs text-gray-500 mt-1">
-                할인율: {(totalStats.discountRate * 100).toFixed(1)}%
+                할인율: {((totalStats.discountRate || 0) * 100).toFixed(1)}%
               </p>
             </div>
 
@@ -232,7 +232,7 @@ export default function ReportsPage() {
                 <TrendingUp className="h-5 w-5 text-slate-900" />
               </div>
               <p className="text-2xl font-bold text-slate-900">
-                {totalStats.netSales.toLocaleString()}원
+                {(totalStats.netSales || 0).toLocaleString()}원
               </p>
               <p className="text-xs text-gray-500 mt-1">실제 수익</p>
             </div>
@@ -243,10 +243,10 @@ export default function ReportsPage() {
                 <TrendingUp className="h-5 w-5 text-slate-900" />
               </div>
               <p className="text-2xl font-bold text-gray-900">
-                {totalStats.avgOrderAmount.toLocaleString()}원
+                {(totalStats.avgOrderAmount || 0).toLocaleString()}원
               </p>
               <p className="text-xs text-gray-500 mt-1">
-                총 {totalStats.orderCount}건 / {totalStats.customerCount}명
+                총 {totalStats.orderCount || 0}건 / {totalStats.customerCount || 0}명
               </p>
             </div>
           </div>
@@ -270,9 +270,9 @@ export default function ReportsPage() {
             <div className="mb-8">
               <CategoryPieChart
                 data={salesData.salesByCategory.map((item: any) => ({
-                  category: item.category,
-                  total: item.totalSales,
-                  count: item.orderCount
+                  category: item.category || 'Unknown',
+                  total: item.totalSales || 0,
+                  count: item.orderCount || 0
                 }))}
               />
             </div>
@@ -292,20 +292,20 @@ export default function ReportsPage() {
                 <DiscountDonutChart
                   stats={{
                     vipDiscount: {
-                      count: salesData.discountStats.vip.count,
-                      total: salesData.discountStats.vip.totalDiscount
+                      count: salesData.discountStats?.vip?.count || 0,
+                      total: salesData.discountStats?.vip?.totalDiscount || 0
                     },
                     birthdayDiscount: {
-                      count: salesData.discountStats.birthday.count,
-                      total: salesData.discountStats.birthday.totalDiscount
+                      count: salesData.discountStats?.birthday?.count || 0,
+                      total: salesData.discountStats?.birthday?.totalDiscount || 0
                     },
                     employeeDiscount: {
-                      count: salesData.discountStats.employee.count,
-                      total: salesData.discountStats.employee.totalDiscount
+                      count: salesData.discountStats?.employee?.count || 0,
+                      total: salesData.discountStats?.employee?.totalDiscount || 0
                     },
                     packageDiscount: {
-                      count: salesData.discountStats.package.count,
-                      total: salesData.discountStats.package.totalDiscount
+                      count: salesData.discountStats?.package?.count || 0,
+                      total: salesData.discountStats?.package?.totalDiscount || 0
                     }
                   }}
                 />
@@ -315,7 +315,7 @@ export default function ReportsPage() {
           )}
 
           {/* 서비스 판매 순위 */}
-          {servicesData && (
+          {servicesData?.topServices && servicesData.topServices.length > 0 && (
             <div>
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-2">
                 <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">서비스별 판매 순위</h2>
@@ -326,11 +326,11 @@ export default function ReportsPage() {
               </div>
               <div className="space-y-6">
                 <ServiceRankingChart
-                  data={servicesData.topServices}
+                  data={servicesData.topServices || []}
                   limit={10}
                 />
                 <TopServicesTable
-                  services={servicesData.topServices}
+                  services={servicesData.topServices || []}
                   title="TOP 20 인기 서비스"
                 />
               </div>
