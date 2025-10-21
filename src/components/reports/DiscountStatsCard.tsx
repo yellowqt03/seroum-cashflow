@@ -13,6 +13,16 @@ interface DiscountStatsCardProps {
 }
 
 export function DiscountStatsCard({ stats }: DiscountStatsCardProps) {
+  // 안전성 검사
+  if (!stats) {
+    return (
+      <div className="bg-white rounded-lg border p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-6">할인 유형별 통계</h3>
+        <p className="text-gray-500 text-center">표시할 데이터가 없습니다.</p>
+      </div>
+    )
+  }
+
   const discountTypes = [
     { key: 'vip', label: 'VIP 할인', color: 'purple', icon: '👑' },
     { key: 'birthday', label: '생일자 할인', color: 'pink', icon: '🎂' },
@@ -21,8 +31,8 @@ export function DiscountStatsCard({ stats }: DiscountStatsCardProps) {
     { key: 'regular', label: '일반 (할인 없음)', color: 'gray', icon: '💰' }
   ]
 
-  const totalDiscountAmount = Object.values(stats).reduce((sum, s) => sum + s.totalDiscount, 0)
-  const totalDiscountCount = Object.values(stats).reduce((sum, s) => sum + s.count, 0)
+  const totalDiscountAmount = Object.values(stats).reduce((sum, s) => sum + (s?.totalDiscount || 0), 0)
+  const totalDiscountCount = Object.values(stats).reduce((sum, s) => sum + (s?.count || 0), 0)
 
   return (
     <div className="bg-white rounded-lg border p-6">
@@ -47,7 +57,7 @@ export function DiscountStatsCard({ stats }: DiscountStatsCardProps) {
       {/* 할인 유형별 상세 */}
       <div className="space-y-4">
         {discountTypes.map(type => {
-          const stat = stats[type.key as keyof DiscountStats]
+          const stat = stats[type.key as keyof DiscountStats] || { count: 0, totalDiscount: 0, avgDiscount: 0 }
           const percentage = totalDiscountAmount > 0
             ? (stat.totalDiscount / totalDiscountAmount) * 100
             : 0
@@ -103,7 +113,7 @@ export function DiscountStatsCard({ stats }: DiscountStatsCardProps) {
             <span className="text-gray-600">할인 집중도</span>
             <div className="text-right">
               {discountTypes.map(type => {
-                const stat = stats[type.key as keyof DiscountStats]
+                const stat = stats[type.key as keyof DiscountStats] || { count: 0, totalDiscount: 0, avgDiscount: 0 }
                 const pct = totalDiscountAmount > 0
                   ? (stat.totalDiscount / totalDiscountAmount) * 100
                   : 0
