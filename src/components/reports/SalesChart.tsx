@@ -46,13 +46,13 @@ export function SalesChart({ data, period = 'month' }: SalesChartProps) {
     return period
   }
 
-  // 차트용 데이터 포맷팅
+  // 차트용 데이터 포맷팅 (안전성 검사 추가)
   const chartData = data.map(item => ({
-    name: formatLabel(item.period),
-    '할인 전 매출': item.totalSales,
-    '순 매출': item.netSales,
-    '할인': item.totalDiscount,
-    '주문 수': item.orderCount,
+    name: formatLabel(item.period || ''),
+    '할인 전 매출': item.totalSales || 0,
+    '순 매출': item.netSales || 0,
+    '할인': item.totalDiscount || 0,
+    '주문 수': item.orderCount || 0,
   }))
 
   // 금액 포맷팅 (천 단위 구분)
@@ -169,25 +169,25 @@ export function SalesChart({ data, period = 'month' }: SalesChartProps) {
         <div>
           <p className="text-xs text-gray-500 mb-1">총 매출</p>
           <p className="text-lg font-semibold text-gray-900">
-            {data.reduce((sum, item) => sum + item.totalSales, 0).toLocaleString()}원
+            {data.reduce((sum, item) => sum + (item.totalSales || 0), 0).toLocaleString()}원
           </p>
         </div>
         <div>
           <p className="text-xs text-gray-500 mb-1">총 할인</p>
           <p className="text-lg font-semibold text-red-600">
-            -{data.reduce((sum, item) => sum + item.totalDiscount, 0).toLocaleString()}원
+            -{data.reduce((sum, item) => sum + (item.totalDiscount || 0), 0).toLocaleString()}원
           </p>
         </div>
         <div>
           <p className="text-xs text-gray-500 mb-1">순 매출</p>
           <p className="text-lg font-semibold text-slate-900">
-            {data.reduce((sum, item) => sum + item.netSales, 0).toLocaleString()}원
+            {data.reduce((sum, item) => sum + (item.netSales || 0), 0).toLocaleString()}원
           </p>
         </div>
         <div>
           <p className="text-xs text-gray-500 mb-1">총 주문</p>
           <p className="text-lg font-semibold text-gray-900">
-            {data.reduce((sum, item) => sum + item.orderCount, 0)}건
+            {data.reduce((sum, item) => sum + (item.orderCount || 0), 0)}건
           </p>
         </div>
       </div>
