@@ -60,41 +60,19 @@ export function DashboardOverview() {
   const fetchDashboardStats = async () => {
     try {
       setLoading(true)
-      // 현재는 더미 데이터로 시작 (실제로는 API에서 가져올 예정)
-      const mockStats: DashboardStats = {
-        totalSales: 12450000,
-        totalOrders: 186,
-        totalCustomers: 89,
-        averageOrderValue: 66935,
-        salesChange: 12.5,
-        ordersChange: 8.3,
-        customersChange: 5.7,
-        topServices: [
-          { name: '프리미엄회복', count: 23, revenue: 2760000 },
-          { name: '파워비타민', count: 18, revenue: 1260000 },
-          { name: '백옥', count: 31, revenue: 930000 },
-          { name: '혈관청소', count: 12, revenue: 960000 },
-          { name: '킬레이션', count: 8, revenue: 960000 }
-        ],
-        customerBreakdown: {
-          regular: 45,
-          vip: 12,
-          birthday: 23,
-          employee: 9
-        },
-        recentOrders: [
-          { id: '1', customerName: '김○○', serviceName: '프리미엄회복', amount: 120000, discountType: 'BIRTHDAY', createdAt: new Date().toISOString() },
-          { id: '2', customerName: '이○○', serviceName: '파워비타민', amount: 70000, createdAt: new Date().toISOString() },
-          { id: '3', customerName: '박○○', serviceName: 'VIP백옥', amount: 0, discountType: 'VIP', createdAt: new Date().toISOString() },
-          { id: '4', customerName: '최○○', serviceName: '혈관청소', amount: 40000, discountType: 'EMPLOYEE', createdAt: new Date().toISOString() }
-        ]
+      setError(null)
+
+      // 실제 API 호출
+      const response = await fetch('/api/dashboard/stats')
+
+      if (!response.ok) {
+        throw new Error('대시보드 데이터를 불러오는데 실패했습니다.')
       }
 
-      // 실제 API 호출 시뮬레이션
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      setStats(mockStats)
-    } catch {
-      setError('대시보드 데이터를 불러오는데 실패했습니다.')
+      const data = await response.json()
+      setStats(data)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '대시보드 데이터를 불러오는데 실패했습니다.')
     } finally {
       setLoading(false)
     }
@@ -144,6 +122,19 @@ export function DashboardOverview() {
 
   return (
     <div className="space-y-6">
+      {/* 새로고침 버튼 */}
+      <div className="flex justify-end">
+        <Button
+          onClick={fetchDashboardStats}
+          variant="outline"
+          size="sm"
+          disabled={loading}
+        >
+          <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+          새로고침
+        </Button>
+      </div>
+
       {/* 주요 지표 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
