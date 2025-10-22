@@ -1,9 +1,8 @@
 'use client'
 
 import {
-  LineChart,
+  ComposedChart,
   Line,
-  BarChart,
   Bar,
   XAxis,
   YAxis,
@@ -89,79 +88,46 @@ export function SalesChart({ data, period = 'month' }: SalesChartProps) {
     return null
   }
 
-  // 기간에 따라 라인차트 또는 바차트 선택
-  const useLineChart = data.length > 7
-
   return (
     <div className="bg-white rounded-lg border p-6">
       <h3 className="text-lg font-semibold text-gray-900 mb-6">기간별 매출 추이</h3>
 
       <ResponsiveContainer width="100%" height={400}>
-        {useLineChart ? (
-          <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-            <XAxis
-              dataKey="name"
-              stroke="#64748b"
-              style={{ fontSize: '12px' }}
-            />
-            <YAxis
-              stroke="#64748b"
-              style={{ fontSize: '12px' }}
-              tickFormatter={formatCurrency}
-            />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend
-              wrapperStyle={{ fontSize: '14px' }}
-              iconType="line"
-            />
-            <Line
-              type="monotone"
-              dataKey="할인 전 매출"
-              stroke="#94a3b8"
-              strokeWidth={2}
-              dot={{ fill: '#94a3b8', r: 4 }}
-              activeDot={{ r: 6 }}
-            />
-            <Line
-              type="monotone"
-              dataKey="순 매출"
-              stroke="#0f172a"
-              strokeWidth={3}
-              dot={{ fill: '#0f172a', r: 4 }}
-              activeDot={{ r: 6 }}
-            />
-          </LineChart>
-        ) : (
-          <BarChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-            <XAxis
-              dataKey="name"
-              stroke="#64748b"
-              style={{ fontSize: '12px' }}
-            />
-            <YAxis
-              stroke="#64748b"
-              style={{ fontSize: '12px' }}
-              tickFormatter={formatCurrency}
-            />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend
-              wrapperStyle={{ fontSize: '14px' }}
-              iconType="square"
-            />
-            <Bar
-              dataKey="할인 전 매출"
-              fill="#cbd5e1"
-              radius={[4, 4, 0, 0]}
-            />
-            <Bar
-              dataKey="순 매출"
-              fill="#0f172a"
-              radius={[4, 4, 0, 0]}
-            />
-          </BarChart>
-        )}
+        <ComposedChart data={chartData}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+          <XAxis
+            dataKey="name"
+            stroke="#64748b"
+            style={{ fontSize: '12px' }}
+          />
+          <YAxis
+            stroke="#64748b"
+            style={{ fontSize: '12px' }}
+            tickFormatter={formatCurrency}
+          />
+          <Tooltip content={<CustomTooltip />} />
+          <Legend
+            wrapperStyle={{ fontSize: '14px' }}
+          />
+          <Bar
+            dataKey="할인 전 매출"
+            fill="#cbd5e1"
+            radius={[4, 4, 0, 0]}
+          />
+          <Bar
+            dataKey="순 매출"
+            fill="#0f172a"
+            radius={[4, 4, 0, 0]}
+          />
+          <Line
+            type="monotone"
+            dataKey="순 매출"
+            stroke="#ef4444"
+            strokeWidth={2}
+            dot={{ fill: '#ef4444', r: 4 }}
+            activeDot={{ r: 6 }}
+          />
+        </ComposedChart>
       </ResponsiveContainer>
 
       {/* 통계 요약 */}
