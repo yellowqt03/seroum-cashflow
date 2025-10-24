@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useToast } from '@/components/providers/ToastProvider'
-import { Package, Clock, CheckCircle, XCircle } from 'lucide-react'
+import { Package, Clock, CheckCircle, XCircle, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 
 interface PackagePurchase {
@@ -121,28 +121,40 @@ export function PackageList({ customerId }: PackageListProps) {
 
   return (
     <div className="space-y-4">
-      {/* 필터 */}
-      <div className="flex gap-2">
+      {/* 필터 및 새로고침 */}
+      <div className="flex items-center justify-between">
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant={filter === 'all' ? 'primary' : 'outline'}
+            onClick={() => setFilter('all')}
+          >
+            전체 ({packages.length})
+          </Button>
+          <Button
+            size="sm"
+            variant={filter === 'active' ? 'primary' : 'outline'}
+            onClick={() => setFilter('active')}
+          >
+            사용 중 ({packages.filter(p => p.status === 'ACTIVE').length})
+          </Button>
+          <Button
+            size="sm"
+            variant={filter === 'completed' ? 'primary' : 'outline'}
+            onClick={() => setFilter('completed')}
+          >
+            완료 ({packages.filter(p => p.status === 'COMPLETED').length})
+          </Button>
+        </div>
+
         <Button
           size="sm"
-          variant={filter === 'all' ? 'primary' : 'outline'}
-          onClick={() => setFilter('all')}
+          variant="outline"
+          onClick={fetchPackages}
+          disabled={loading}
         >
-          전체 ({packages.length})
-        </Button>
-        <Button
-          size="sm"
-          variant={filter === 'active' ? 'primary' : 'outline'}
-          onClick={() => setFilter('active')}
-        >
-          사용 중 ({packages.filter(p => p.status === 'ACTIVE').length})
-        </Button>
-        <Button
-          size="sm"
-          variant={filter === 'completed' ? 'primary' : 'outline'}
-          onClick={() => setFilter('completed')}
-        >
-          완료 ({packages.filter(p => p.status === 'COMPLETED').length})
+          <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+          새로고침
         </Button>
       </div>
 
