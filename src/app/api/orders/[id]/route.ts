@@ -129,58 +129,91 @@ export async function PUT(
           })
         }
 
-        // 2. 패키지 사용 처리
+        // 2. 패키지 구매 및 사용 처리
         const orderItems = await tx.orderItem.findMany({
           where: { orderId: id },
           include: { service: true }
         })
 
         for (const orderItem of orderItems) {
-          // 고객의 활성 패키지 찾기
-          const activePackage = await tx.packagePurchase.findFirst({
-            where: {
-              customerId: updatedOrder.customerId,
-              serviceId: orderItem.serviceId,
-              status: 'ACTIVE',
-              remainingCount: { gt: 0 }
-            },
-            orderBy: {
-              purchasedAt: 'asc' // 오래된 패키지부터 사용
-            }
-          })
+          // 패키지 구매인 경우 (packageType이 PACKAGE_5, PACKAGE_10 등)
+          if (orderItem.packageType && orderItem.packageType.startsWith('PACKAGE_')) {
+            // 패키지 횟수 추출 (PACKAGE_5 -> 5, PACKAGE_10 -> 10)
+            const packageCount = parseInt(orderItem.packageType.split('_')[1])
 
-          if (activePackage && orderItem.quantity > 0) {
-            // 이미 사용 기록이 있는지 확인 (중복 방지)
-            const existingUsage = await tx.packageUsage.findFirst({
+            // 중복 생성 방지 - 이미 패키지 구매 기록이 있는지 확인
+            const existingPackage = await tx.packagePurchase.findFirst({
               where: {
                 orderId: id,
-                orderItemId: orderItem.id
+                customerId: updatedOrder.customerId,
+                serviceId: orderItem.serviceId
               }
             })
 
-            if (!existingUsage) {
-              // 사용할 횟수 계산
-              const usedCount = Math.min(activePackage.remainingCount, orderItem.quantity)
+            if (!existingPackage && packageCount > 0) {
+              // 각 수량(quantity)마다 별도의 패키지 생성
+              for (let i = 0; i < orderItem.quantity; i++) {
+                await tx.packagePurchase.create({
+                  data: {
+                    orderId: id,
+                    customerId: updatedOrder.customerId,
+                    serviceId: orderItem.serviceId,
+                    packageType: orderItem.packageType,
+                    totalCount: packageCount,
+                    remainingCount: packageCount,
+                    purchasedAt: updatedOrder.completedAt || new Date(),
+                    status: 'ACTIVE'
+                  }
+                })
+              }
+            }
+          } else {
+            // 일반 서비스 주문인 경우 - 패키지 횟수 차감
+            const activePackage = await tx.packagePurchase.findFirst({
+              where: {
+                customerId: updatedOrder.customerId,
+                serviceId: orderItem.serviceId,
+                status: 'ACTIVE',
+                remainingCount: { gt: 0 }
+              },
+              orderBy: {
+                purchasedAt: 'asc' // 오래된 패키지부터 사용 (FIFO)
+              }
+            })
 
-              // 패키지 사용 이력 생성
-              await tx.packageUsage.create({
-                data: {
-                  packagePurchaseId: activePackage.id,
+            if (activePackage && orderItem.quantity > 0) {
+              // 이미 사용 기록이 있는지 확인 (중복 방지)
+              const existingUsage = await tx.packageUsage.findFirst({
+                where: {
                   orderId: id,
-                  orderItemId: orderItem.id,
-                  usedCount: usedCount
+                  orderItemId: orderItem.id
                 }
               })
 
-              // 패키지 남은 횟수 차감
-              const newRemainingCount = activePackage.remainingCount - usedCount
-              await tx.packagePurchase.update({
-                where: { id: activePackage.id },
-                data: {
-                  remainingCount: newRemainingCount,
-                  status: newRemainingCount === 0 ? 'COMPLETED' : 'ACTIVE'
-                }
-              })
+              if (!existingUsage) {
+                // 사용할 횟수 계산
+                const usedCount = Math.min(activePackage.remainingCount, orderItem.quantity)
+
+                // 패키지 사용 이력 생성
+                await tx.packageUsage.create({
+                  data: {
+                    packagePurchaseId: activePackage.id,
+                    orderId: id,
+                    orderItemId: orderItem.id,
+                    usedCount: usedCount
+                  }
+                })
+
+                // 패키지 남은 횟수 차감
+                const newRemainingCount = activePackage.remainingCount - usedCount
+                await tx.packagePurchase.update({
+                  where: { id: activePackage.id },
+                  data: {
+                    remainingCount: newRemainingCount,
+                    status: newRemainingCount === 0 ? 'COMPLETED' : 'ACTIVE'
+                  }
+                })
+              }
             }
           }
         }
