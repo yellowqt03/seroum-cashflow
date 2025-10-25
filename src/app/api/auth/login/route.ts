@@ -51,7 +51,7 @@ export async function POST(request: Request) {
         role: user.role
       }
     })
-  } catch {
+  } catch (error) {
     console.error('로그인 오류:', error)
     return NextResponse.json(
       { error: '로그인 중 오류가 발생했습니다.' },
