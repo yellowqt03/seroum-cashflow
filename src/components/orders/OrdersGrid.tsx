@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { OrderCard } from './OrderCard'
 import { OrderForm } from './OrderForm'
+import { OrderDetailModal } from './OrderDetailModal'
 import { Button } from '@/components/ui/Button'
 import { Select } from '@/components/ui/Select'
 import { Badge } from '@/components/ui/Badge'
@@ -34,6 +35,7 @@ export function OrdersGrid() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [showOrderForm, setShowOrderForm] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null)
 
   useEffect(() => {
     fetchOrders()
@@ -255,13 +257,21 @@ export function OrdersGrid() {
             key={order.id}
             order={order}
             onStatusUpdate={handleStatusUpdate}
-            onViewDetails={(order) => {
-              // TODO: 상세 모달 구현
-              console.log('View details:', order)
-            }}
+            onViewDetails={(order) => setSelectedOrderId(order.id)}
           />
         ))}
       </div>
+
+      {/* 주문 상세 모달 */}
+      {selectedOrderId && (
+        <OrderDetailModal
+          orderId={selectedOrderId}
+          onClose={() => {
+            setSelectedOrderId(null)
+            fetchOrders() // 모달 닫을 때 목록 새로고침
+          }}
+        />
+      )}
 
       {/* 빈 상태 */}
       {orders.length === 0 && (

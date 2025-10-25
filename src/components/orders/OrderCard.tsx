@@ -14,7 +14,9 @@ import {
   FileText,
   CheckCircle,
   XCircle,
-  PlayCircle
+  PlayCircle,
+  Package,
+  ShoppingCart
 } from 'lucide-react'
 
 interface OrderItem {
@@ -73,13 +75,34 @@ export function OrderCard({ order, onStatusUpdate, onViewDetails }: OrderCardPro
   const totalItems = order.orderItems.reduce((sum: number, item: OrderItem) => sum + item.quantity, 0)
   const discountApplied = order.discountAmount > 0
 
+  // 패키지 구매 여부 확인
+  const isPackagePurchase = order.orderItems.some(item =>
+    item.packageType && item.packageType.startsWith('PACKAGE_')
+  )
+
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card className={`hover:shadow-md transition-shadow ${isPackagePurchase ? 'border-l-4 border-l-blue-500' : ''}`}>
       <CardHeader className="pb-4">
         <div className="flex items-start justify-between">
-          <div>
-            <CardTitle className="text-lg flex items-center space-x-2">
-              <span>주문 #{order.id.slice(-8)}</span>
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-2">
+              <CardTitle className="text-lg flex items-center space-x-2">
+                <span>주문 #{order.id.slice(-8)}</span>
+              </CardTitle>
+              {isPackagePurchase && (
+                <Badge variant="default" className="bg-blue-600">
+                  <Package className="h-3 w-3 mr-1" />
+                  패키지 구매
+                </Badge>
+              )}
+              {!isPackagePurchase && (
+                <Badge variant="secondary">
+                  <ShoppingCart className="h-3 w-3 mr-1" />
+                  일반 주문
+                </Badge>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
               <Badge variant={getStatusColor(order.status).includes('green') ? 'success' :
                              getStatusColor(order.status).includes('blue') ? 'default' :
                              getStatusColor(order.status).includes('yellow') ? 'warning' : 'danger'}>
@@ -88,9 +111,9 @@ export function OrderCard({ order, onStatusUpdate, onViewDetails }: OrderCardPro
                   {ORDER_STATUSES[order.status as keyof typeof ORDER_STATUSES]}
                 </span>
               </Badge>
-            </CardTitle>
-            <div className="text-sm text-gray-600 mt-1">
-              {formatDate(order.createdAt, 'time')}
+              <div className="text-sm text-gray-600">
+                {formatDate(order.createdAt, 'time')}
+              </div>
             </div>
           </div>
 
@@ -132,23 +155,35 @@ export function OrderCard({ order, onStatusUpdate, onViewDetails }: OrderCardPro
           <div className="text-sm font-medium text-gray-900">
             주문 내역 ({totalItems}개 항목)
           </div>
-          <div className="space-y-1">
-            {order.orderItems.slice(0, 2).map((item: OrderItem, index: number) => (
-              <div key={index} className="flex justify-between text-sm">
-                <div className="flex-1">
-                  <span className="font-medium">{item.service.name}</span>
-                  {item.packageType !== 'single' && (
-                    <span className="text-gray-500 ml-2">
-                      ({item.packageType.replace('package', '')}회 패키지)
-                    </span>
-                  )}
-                  <span className="text-gray-500 ml-2">× {item.quantity}</span>
+          <div className="space-y-2">
+            {order.orderItems.slice(0, 2).map((item: OrderItem, index: number) => {
+              const isPkg = item.packageType && item.packageType.startsWith('PACKAGE_')
+              const pkgCount = isPkg ? item.packageType.split('_')[1] : null
+
+              return (
+                <div key={index} className={`flex justify-between text-sm p-2 rounded ${isPkg ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50'}`}>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      {isPkg && <Package className="h-4 w-4 text-blue-600" />}
+                      <span className="font-medium">{item.service.name}</span>
+                    </div>
+                    {isPkg && (
+                      <div className="text-xs text-blue-700 mt-1 ml-6">
+                        📦 {pkgCount}회 패키지 × {item.quantity}개 = 총 {parseInt(pkgCount || '0') * item.quantity}회 제공
+                      </div>
+                    )}
+                    {!isPkg && (
+                      <div className="text-xs text-gray-600 mt-1">
+                        일반 서비스 × {item.quantity}회
+                      </div>
+                    )}
+                  </div>
+                  <span className="font-medium text-right">{formatPrice(item.totalPrice)}</span>
                 </div>
-                <span className="font-medium">{formatPrice(item.totalPrice)}</span>
-              </div>
-            ))}
+              )
+            })}
             {order.orderItems.length > 2 && (
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-gray-500 text-center">
                 + {order.orderItems.length - 2}개 항목 더보기
               </div>
             )}
