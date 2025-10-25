@@ -61,11 +61,23 @@ export function PackageList({ customerId }: PackageListProps) {
   }
 
   const getPackageTypeName = (packageType: string) => {
-    switch (packageType) {
-      case 'package4': return '4회 패키지'
-      case 'package8': return '8회 패키지'
-      case 'package10': return '10회 패키지'
-      default: return packageType
+    // "package10" 또는 "PACKAGE_10" 형식 모두 지원
+    const normalizedType = packageType.toUpperCase().replace('PACKAGE', '').replace('_', '')
+
+    switch (packageType.toLowerCase()) {
+      case 'package4':
+        return '4회 패키지'
+      case 'package8':
+        return '8회 패키지'
+      case 'package10':
+        return '10회 패키지'
+      default:
+        // "PACKAGE_5", "PACKAGE_10" 등의 형식 처리
+        if (packageType.startsWith('PACKAGE_')) {
+          const count = packageType.split('_')[1]
+          return `${count}회 패키지`
+        }
+        return packageType
     }
   }
 
@@ -201,7 +213,7 @@ export function PackageList({ customerId }: PackageListProps) {
                 <div>
                   <p className="text-gray-500 mb-1">구매 금액</p>
                   <p className="font-medium">
-                    {pkg.purchasePrice.toLocaleString()}원
+                    {(pkg.purchasePrice || 0).toLocaleString()}원
                   </p>
                 </div>
               </div>

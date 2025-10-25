@@ -161,6 +161,7 @@ export async function PUT(
                     packageType: orderItem.packageType,
                     totalCount: packageCount,
                     remainingCount: packageCount,
+                    purchasePrice: orderItem.totalPrice / orderItem.quantity, // 패키지당 가격
                     purchasedAt: updatedOrder.completedAt || new Date(),
                     status: 'ACTIVE'
                   }
