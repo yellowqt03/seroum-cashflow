@@ -112,6 +112,62 @@ export async function PUT(
         }
       })
 
+      // PENDING → IN_PROGRESS: 패키지 주문인 경우 세션 정보 생성
+      if (data.status === 'IN_PROGRESS' && currentOrder.status === 'PENDING') {
+        const orderItems = await tx.orderItem.findMany({
+          where: { orderId: id },
+          include: { service: true }
+        })
+
+        // 패키지 주문인지 확인
+        for (const orderItem of orderItems) {
+          const isPackagePurchase = orderItem.packageType &&
+            (orderItem.packageType.toLowerCase().startsWith('package') &&
+             orderItem.packageType !== 'single')
+
+          if (isPackagePurchase) {
+            // 패키지 횟수 추출
+            let packageCount = 0
+            if (orderItem.packageType.includes('_')) {
+              packageCount = parseInt(orderItem.packageType.split('_')[1])
+            } else {
+              packageCount = parseInt(orderItem.packageType.replace(/\D/g, ''))
+            }
+
+            // 이 주문으로 구매할 패키지의 정보를 세션에 저장
+            // (아직 PackagePurchase는 생성되지 않았지만, 세션 정보는 미리 준비)
+            let sessionInfo: any = {}
+            try {
+              if (currentOrder.notes && currentOrder.notes.startsWith('{')) {
+                sessionInfo = JSON.parse(currentOrder.notes)
+              }
+            } catch (e) {
+              sessionInfo = { originalNotes: currentOrder.notes }
+            }
+
+            sessionInfo.packageSession = {
+              packagePurchaseId: null, // 아직 생성 전이므로 null
+              serviceName: orderItem.service.name,
+              packageType: orderItem.packageType,
+              totalCount: packageCount,
+              usedInThisSession: 0,
+              remainingCount: packageCount, // 아직 사용 전이므로 전체 횟수
+              isPendingPurchase: true // 패키지 구매 대기 중 표시
+            }
+
+            // 주문 notes 업데이트
+            await tx.order.update({
+              where: { id },
+              data: {
+                notes: JSON.stringify(sessionInfo)
+              }
+            })
+
+            break // 첫 번째 패키지 항목만 처리
+          }
+        }
+      }
+
       // 주문이 완료 상태가 되면 자동으로 방문 기록 생성 및 패키지 차감
       if (data.status === 'COMPLETED' && currentOrder.status !== 'COMPLETED') {
         // 1. 방문 기록 생성

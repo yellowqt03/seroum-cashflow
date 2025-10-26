@@ -16,17 +16,11 @@ export async function POST(
     const body = await request.json()
     const { packagePurchaseId } = body
 
-    if (!packagePurchaseId) {
-      return NextResponse.json(
-        { error: '패키지 ID가 필요합니다.' },
-        { status: 400 }
-      )
-    }
-
     // 주문 조회
     const order = await prisma.order.findUnique({
       where: { id },
       include: {
+        customer: true,
         orderItems: {
           include: { service: true }
         }
@@ -48,45 +42,96 @@ export async function POST(
       )
     }
 
-    // 패키지 조회
-    const packagePurchase = await prisma.packagePurchase.findUnique({
-      where: { id: packagePurchaseId },
-      include: {
-        service: { select: { name: true } }
-      }
-    })
+    // 패키지 조회 (packagePurchaseId가 있는 경우만)
+    let packagePurchase = null
+    if (packagePurchaseId) {
+      packagePurchase = await prisma.packagePurchase.findUnique({
+        where: { id: packagePurchaseId },
+        include: {
+          service: { select: { name: true } }
+        }
+      })
 
-    if (!packagePurchase) {
-      return NextResponse.json(
-        { error: '패키지를 찾을 수 없습니다.' },
-        { status: 404 }
-      )
+      if (!packagePurchase) {
+        return NextResponse.json(
+          { error: '패키지를 찾을 수 없습니다.' },
+          { status: 404 }
+        )
+      }
+
+      // 남은 횟수 확인
+      if (packagePurchase.remainingCount <= 0) {
+        return NextResponse.json(
+          { error: '패키지 횟수가 모두 소진되었습니다.' },
+          { status: 400 }
+        )
+      }
     }
 
-    // 남은 횟수 확인
-    if (packagePurchase.remainingCount <= 0) {
-      return NextResponse.json(
-        { error: '패키지 횟수가 모두 소진되었습니다.' },
-        { status: 400 }
-      )
+    // 세션 정보 파싱하여 isPendingPurchase 확인
+    let sessionInfo: any = {}
+    let isPendingPurchase = false
+    try {
+      if (order.notes && order.notes.startsWith('{')) {
+        sessionInfo = JSON.parse(order.notes)
+        isPendingPurchase = sessionInfo.packageSession?.isPendingPurchase || false
+      }
+    } catch (e) {
+      // JSON 아님
     }
 
     // 트랜잭션으로 처리
     const result = await prisma.$transaction(async (tx) => {
+      let actualPackagePurchaseId = packagePurchaseId
+      let actualPackagePurchase = packagePurchase
+
+      // isPendingPurchase인 경우: 첫 번째 사용 시 PackagePurchase 생성
+      if (isPendingPurchase && !packagePurchaseId) {
+        // 패키지 횟수 추출
+        let packageCount = 0
+        const packageType = order.orderItems[0].packageType
+        if (packageType.includes('_')) {
+          packageCount = parseInt(packageType.split('_')[1])
+        } else {
+          packageCount = parseInt(packageType.replace(/\D/g, ''))
+        }
+
+        // PackagePurchase 생성
+        const newPackage = await tx.packagePurchase.create({
+          data: {
+            orderId: id,
+            customerId: order.customer.id,
+            serviceId: order.orderItems[0].serviceId,
+            packageType: packageType,
+            totalCount: packageCount,
+            remainingCount: packageCount,
+            purchasePrice: order.finalAmount,
+            purchasedAt: new Date(),
+            status: 'ACTIVE'
+          },
+          include: {
+            service: { select: { name: true } }
+          }
+        })
+
+        actualPackagePurchaseId = newPackage.id
+        actualPackagePurchase = newPackage
+      }
+
       // 1. 패키지 사용 이력 생성
       const packageUsage = await tx.packageUsage.create({
         data: {
-          packagePurchaseId: packagePurchaseId,
+          packagePurchaseId: actualPackagePurchaseId,
           orderId: id,
-          orderItemId: order.orderItems[0].id, // 첫 번째 주문 항목 연결
+          orderItemId: order.orderItems[0].id,
           usedCount: 1
         }
       })
 
       // 2. 패키지 남은 횟수 감소
-      const newRemainingCount = packagePurchase.remainingCount - 1
+      const newRemainingCount = actualPackagePurchase.remainingCount - 1
       const updatedPackage = await tx.packagePurchase.update({
-        where: { id: packagePurchaseId },
+        where: { id: actualPackagePurchaseId },
         data: {
           remainingCount: newRemainingCount,
           status: newRemainingCount === 0 ? 'COMPLETED' : 'ACTIVE'
@@ -94,31 +139,32 @@ export async function POST(
       })
 
       // 3. 주문의 notes에 세션 정보 저장
-      let sessionInfo: any = {}
+      let updatedSessionInfo: any = {}
       try {
         // 기존 notes에서 세션 정보 파싱 (JSON 형식인 경우)
         if (order.notes && order.notes.startsWith('{')) {
-          sessionInfo = JSON.parse(order.notes)
+          updatedSessionInfo = JSON.parse(order.notes)
         }
       } catch (e) {
         // JSON이 아니면 새로 시작
-        sessionInfo = { originalNotes: order.notes }
+        updatedSessionInfo = { originalNotes: order.notes }
       }
 
-      sessionInfo.packageSession = {
-        packagePurchaseId: packagePurchaseId,
-        serviceName: packagePurchase.service.name,
-        packageType: packagePurchase.packageType,
-        totalCount: packagePurchase.totalCount,
-        usedInThisSession: (sessionInfo.packageSession?.usedInThisSession || 0) + 1,
-        remainingCount: newRemainingCount
+      updatedSessionInfo.packageSession = {
+        packagePurchaseId: actualPackagePurchaseId,
+        serviceName: actualPackagePurchase.service.name,
+        packageType: actualPackagePurchase.packageType,
+        totalCount: actualPackagePurchase.totalCount,
+        usedInThisSession: (updatedSessionInfo.packageSession?.usedInThisSession || 0) + 1,
+        remainingCount: newRemainingCount,
+        isPendingPurchase: false // 이제 패키지가 생성되었으므로 false
       }
 
       // 4. 주문 notes 업데이트
       const updatedOrder = await tx.order.update({
         where: { id },
         data: {
-          notes: JSON.stringify(sessionInfo)
+          notes: JSON.stringify(updatedSessionInfo)
         },
         include: {
           orderItems: {
@@ -142,13 +188,13 @@ export async function POST(
         packageUsage,
         updatedPackage,
         updatedOrder,
-        sessionInfo: sessionInfo.packageSession
+        sessionInfo: updatedSessionInfo.packageSession
       }
     })
 
     return NextResponse.json({
       success: true,
-      message: `패키지 1회 사용 완료 (남은 횟수: ${result.updatedPackage.remainingCount}/${packagePurchase.totalCount})`,
+      message: `패키지 1회 사용 완료 (남은 횟수: ${result.updatedPackage.remainingCount}/${result.updatedPackage.totalCount})`,
       data: result
     })
   } catch (error) {
