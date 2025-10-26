@@ -89,6 +89,28 @@ export function OrdersGrid() {
     }
   }
 
+  const handleUsePackage = async (orderId: string, packagePurchaseId: string) => {
+    try {
+      const response = await fetch(`/api/orders/${orderId}/use-package`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ packagePurchaseId })
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || '패키지 사용에 실패했습니다.')
+      }
+
+      const data = await response.json()
+      showToast(data.message, 'success')
+      await fetchOrders() // 목록 새로고침하여 남은 횟수 업데이트
+    } catch (error) {
+      console.error('패키지 사용 오류:', error)
+      showToast(error instanceof Error ? error.message : '패키지 사용 중 오류가 발생했습니다.', 'error')
+    }
+  }
+
   const handleOrderSubmit = () => {
     setShowOrderForm(false)
     fetchOrders() // 새로운 주문 추가 후 목록 새로고침
@@ -258,6 +280,7 @@ export function OrdersGrid() {
             order={order}
             onStatusUpdate={handleStatusUpdate}
             onViewDetails={(order) => setSelectedOrderId(order.id)}
+            onUsePackage={handleUsePackage}
           />
         ))}
       </div>

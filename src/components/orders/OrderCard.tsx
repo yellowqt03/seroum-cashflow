@@ -50,9 +50,10 @@ interface OrderCardProps {
   order: OrderData
   onStatusUpdate?: (orderId: string, status: string) => void
   onViewDetails?: (order: OrderData) => void
+  onUsePackage?: (orderId: string, packagePurchaseId: string) => void
 }
 
-export function OrderCard({ order, onStatusUpdate, onViewDetails }: OrderCardProps) {
+export function OrderCard({ order, onStatusUpdate, onViewDetails, onUsePackage }: OrderCardProps) {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'PENDING':
@@ -75,10 +76,23 @@ export function OrderCard({ order, onStatusUpdate, onViewDetails }: OrderCardPro
   const totalItems = order.orderItems.reduce((sum: number, item: OrderItem) => sum + item.quantity, 0)
   const discountApplied = order.discountAmount > 0
 
-  // 패키지 구매 여부 확인
+  // 패키지 구매 여부 확인 (package4, package8, package10 또는 PACKAGE_X)
   const isPackagePurchase = order.orderItems.some(item =>
-    item.packageType && item.packageType.startsWith('PACKAGE_')
+    item.packageType &&
+    (item.packageType.toLowerCase().startsWith('package') &&
+     item.packageType !== 'single')
   )
+
+  // 패키지 세션 정보 파싱
+  let packageSession: any = null
+  try {
+    if (order.notes && order.notes.startsWith('{')) {
+      const parsed = JSON.parse(order.notes)
+      packageSession = parsed.packageSession
+    }
+  } catch (e) {
+    // JSON 아님
+  }
 
   return (
     <Card className={`hover:shadow-md transition-shadow ${isPackagePurchase ? 'border-l-4 border-l-blue-500' : ''}`}>
@@ -157,8 +171,19 @@ export function OrderCard({ order, onStatusUpdate, onViewDetails }: OrderCardPro
           </div>
           <div className="space-y-2">
             {order.orderItems.slice(0, 2).map((item: OrderItem, index: number) => {
-              const isPkg = item.packageType && item.packageType.startsWith('PACKAGE_')
-              const pkgCount = isPkg ? item.packageType.split('_')[1] : null
+              const isPkg = item.packageType &&
+                (item.packageType.toLowerCase().startsWith('package') &&
+                 item.packageType !== 'single')
+
+              // 패키지 횟수 추출
+              let pkgCount: number | null = null
+              if (isPkg) {
+                if (item.packageType.includes('_')) {
+                  pkgCount = parseInt(item.packageType.split('_')[1])
+                } else {
+                  pkgCount = parseInt(item.packageType.replace(/\D/g, ''))
+                }
+              }
 
               return (
                 <div key={index} className={`flex justify-between text-sm p-2 rounded ${isPkg ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50'}`}>
@@ -167,9 +192,9 @@ export function OrderCard({ order, onStatusUpdate, onViewDetails }: OrderCardPro
                       {isPkg && <Package className="h-4 w-4 text-blue-600" />}
                       <span className="font-medium">{item.service.name}</span>
                     </div>
-                    {isPkg && (
+                    {isPkg && pkgCount && (
                       <div className="text-xs text-blue-700 mt-1 ml-6">
-                        📦 {pkgCount}회 패키지 × {item.quantity}개 = 총 {parseInt(pkgCount || '0') * item.quantity}회 제공
+                        📦 {pkgCount}회 패키지 × {item.quantity}개 = 총 {pkgCount * item.quantity}회 제공
                       </div>
                     )}
                     {!isPkg && (
@@ -206,8 +231,32 @@ export function OrderCard({ order, onStatusUpdate, onViewDetails }: OrderCardPro
           <span>{PAYMENT_METHODS[order.paymentMethod as keyof typeof PAYMENT_METHODS]}</span>
         </div>
 
-        {/* 특이사항 */}
-        {order.notes && (
+        {/* 패키지 세션 정보 */}
+        {packageSession && order.status === 'IN_PROGRESS' && (
+          <div className="bg-orange-50 p-3 rounded-lg border border-orange-200">
+            <div className="text-sm font-medium text-orange-900 mb-2 flex items-center gap-2">
+              <Package className="h-4 w-4" />
+              패키지 사용 중
+            </div>
+            <div className="space-y-1 text-sm">
+              <div className="flex justify-between">
+                <span className="text-gray-700">서비스:</span>
+                <span className="font-medium text-gray-900">{packageSession.serviceName}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-700">이번 방문 사용:</span>
+                <span className="font-medium text-blue-600">{packageSession.usedInThisSession}회</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-700">남은 횟수:</span>
+                <span className="font-medium text-orange-600">{packageSession.remainingCount}/{packageSession.totalCount}회</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 특이사항 (JSON이 아닌 경우에만 표시) */}
+        {order.notes && !order.notes.startsWith('{') && (
           <div className="flex items-start space-x-2 text-sm">
             <FileText className="h-4 w-4 text-gray-500 mt-0.5" />
             <div className="text-gray-600">
@@ -240,14 +289,30 @@ export function OrderCard({ order, onStatusUpdate, onViewDetails }: OrderCardPro
                   </Button>
                 )}
                 {order.status === 'IN_PROGRESS' && (
-                  <Button
-                    size="sm"
-                    onClick={() => onStatusUpdate?.(order.id, 'COMPLETED')}
-                    className="bg-green-600 hover:bg-green-700"
-                  >
-                    <CheckCircle className="h-4 w-4 mr-1" />
-                    완료
-                  </Button>
+                  <>
+                    {/* 패키지 사용 버튼 (패키지 세션이 있고 남은 횟수가 있을 때만) */}
+                    {packageSession && packageSession.remainingCount > 0 && onUsePackage && (
+                      <Button
+                        size="sm"
+                        onClick={() => onUsePackage(order.id, packageSession.packagePurchaseId)}
+                        className="bg-blue-600 hover:bg-blue-700"
+                      >
+                        <Package className="h-4 w-4 mr-1" />
+                        확인 ({packageSession.remainingCount}회 남음)
+                      </Button>
+                    )}
+                    {/* 일반 완료 버튼 (패키지가 없거나 모두 사용한 경우) */}
+                    {(!packageSession || packageSession.remainingCount === 0) && (
+                      <Button
+                        size="sm"
+                        onClick={() => onStatusUpdate?.(order.id, 'COMPLETED')}
+                        className="bg-green-600 hover:bg-green-700"
+                      >
+                        <CheckCircle className="h-4 w-4 mr-1" />
+                        완료
+                      </Button>
+                    )}
+                  </>
                 )}
                 <Button
                   variant="outline"

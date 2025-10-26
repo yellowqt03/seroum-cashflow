@@ -170,10 +170,10 @@ export function OrderForm({ onOrderSubmit, onCancel }: OrderFormProps) {
 
       if (!service) return prevServices
 
-      // 최적 할인 옵션을 적용하여 가격 정보만 업데이트
-      // (packageType과 quantity는 기존 값 유지)
+      // 최적 할인 옵션을 적용 (packageType과 가격 모두 업데이트)
       const updatedService = {
         ...service,
+        packageType: option.packageType,  // packageType도 변경
         unitPrice: option.finalPrice / service.quantity,
         totalPrice: option.finalPrice
       }
@@ -183,7 +183,7 @@ export function OrderForm({ onOrderSubmit, onCancel }: OrderFormProps) {
     })
 
     // 사용자에게 적용 완료 알림
-    showToast(`최적 할인 적용! ${option.discountAmount.toLocaleString()}원 절약`, 'success')
+    showToast(`${option.description} 적용! ${option.discountAmount.toLocaleString()}원 절약`, 'success')
   }
 
   const handleOrderSubmit = async () => {
