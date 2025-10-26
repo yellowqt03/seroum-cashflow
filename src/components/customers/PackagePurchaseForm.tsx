@@ -206,9 +206,33 @@ export function PackagePurchaseForm({
               <CouponSelector
                 customerId={customerId}
                 subtotal={subtotal}
-                onCouponSelect={(couponId, discount) => {
+                selectedCouponId={selectedCouponId}
+                onSelectCoupon={(couponId) => {
                   setSelectedCouponId(couponId)
-                  setCouponDiscount(discount)
+                  // 쿠폰 할인 금액 계산
+                  if (couponId) {
+                    // 쿠폰 정보를 다시 조회하여 할인 금액 계산
+                    fetch(`/api/coupons/${couponId}`)
+                      .then(res => res.json())
+                      .then(coupon => {
+                        let discount = 0
+                        if (coupon.discountType === 'PERCENT') {
+                          discount = Math.floor(subtotal * coupon.discountValue)
+                          if (coupon.maxDiscount) {
+                            discount = Math.min(discount, coupon.maxDiscount)
+                          }
+                        } else {
+                          discount = coupon.discountValue
+                        }
+                        setCouponDiscount(discount)
+                      })
+                      .catch(err => {
+                        console.error('쿠폰 정보 조회 오류:', err)
+                        setCouponDiscount(0)
+                      })
+                  } else {
+                    setCouponDiscount(0)
+                  }
                 }}
               />
             </div>
