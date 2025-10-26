@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/Button'
 import { Select } from '@/components/ui/Select'
 import { Input } from '@/components/ui/Input'
 import { X, Package, Tag } from 'lucide-react'
-import CouponSelector from '@/components/orders/CouponSelector'
 
 interface Service {
   id: string
@@ -15,6 +14,19 @@ interface Service {
   package4Price: number | null
   package8Price: number | null
   package10Price: number | null
+}
+
+interface Coupon {
+  id: string
+  name: string
+  discountType: string
+  discountValue: number
+  minAmount: number | null
+  maxDiscount: number | null
+  validFrom: string
+  validUntil: string
+  usageLimit: number | null
+  usedCount: number
 }
 
 interface PackagePurchaseFormProps {
@@ -30,6 +42,7 @@ export function PackagePurchaseForm({
 }: PackagePurchaseFormProps) {
   const { showToast } = useToast()
   const [services, setServices] = useState<Service[]>([])
+  const [coupons, setCoupons] = useState<Coupon[]>([])
   const [loading, setLoading] = useState(false)
   const [selectedCouponId, setSelectedCouponId] = useState<string | null>(null)
   const [couponDiscount, setCouponDiscount] = useState(0)
@@ -42,6 +55,7 @@ export function PackagePurchaseForm({
 
   useEffect(() => {
     fetchServices()
+    fetchCoupons()
   }, [])
 
   const fetchServices = async () => {
@@ -57,6 +71,27 @@ export function PackagePurchaseForm({
       }
     } catch (error) {
       console.error('서비스 목록 조회 오류:', error)
+    }
+  }
+
+  const fetchCoupons = async () => {
+    try {
+      const res = await fetch('/api/coupons?active=true')
+      if (res.ok) {
+        const data = await res.json()
+        // 사용 가능한 쿠폰만 필터링
+        const now = new Date()
+        const available = data.filter((coupon: Coupon) => {
+          const validFrom = new Date(coupon.validFrom)
+          const validUntil = new Date(coupon.validUntil)
+          const isDateValid = now >= validFrom && now <= validUntil
+          const isUsageValid = !coupon.usageLimit || coupon.usedCount < coupon.usageLimit
+          return isDateValid && isUsageValid
+        })
+        setCoupons(available)
+      }
+    } catch (error) {
+      console.error('쿠폰 목록 조회 오류:', error)
     }
   }
 
@@ -96,6 +131,40 @@ export function PackagePurchaseForm({
   // 쿠폰 적용된 최종 금액 계산
   const subtotal = selectedPackage?.price || 0
   const finalAmount = Math.max(0, subtotal - couponDiscount)
+
+  const calculateCouponDiscount = (coupon: Coupon, amount: number) => {
+    if (coupon.discountType === 'PERCENT') {
+      const discount = Math.floor(amount * coupon.discountValue)
+      if (coupon.maxDiscount) {
+        return Math.min(discount, coupon.maxDiscount)
+      }
+      return discount
+    } else {
+      return coupon.discountValue
+    }
+  }
+
+  const isCouponApplicable = (coupon: Coupon) => {
+    if (coupon.minAmount && subtotal < coupon.minAmount) {
+      return false
+    }
+    return true
+  }
+
+  const handleCouponChange = (couponId: string) => {
+    if (!couponId) {
+      setSelectedCouponId(null)
+      setCouponDiscount(0)
+      return
+    }
+
+    const coupon = coupons.find(c => c.id === couponId)
+    if (coupon && isCouponApplicable(coupon)) {
+      setSelectedCouponId(couponId)
+      const discount = calculateCouponDiscount(coupon, subtotal)
+      setCouponDiscount(discount)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -203,38 +272,35 @@ export function PackagePurchaseForm({
                 <Tag className="h-4 w-4" />
                 할인 쿠폰 (선택사항)
               </label>
-              <CouponSelector
-                customerId={customerId}
-                subtotal={subtotal}
-                selectedCouponId={selectedCouponId}
-                onSelectCoupon={(couponId) => {
-                  setSelectedCouponId(couponId)
-                  // 쿠폰 할인 금액 계산
-                  if (couponId) {
-                    // 쿠폰 정보를 다시 조회하여 할인 금액 계산
-                    fetch(`/api/coupons/${couponId}`)
-                      .then(res => res.json())
-                      .then(coupon => {
-                        let discount = 0
-                        if (coupon.discountType === 'PERCENT') {
-                          discount = Math.floor(subtotal * coupon.discountValue)
-                          if (coupon.maxDiscount) {
-                            discount = Math.min(discount, coupon.maxDiscount)
-                          }
-                        } else {
-                          discount = coupon.discountValue
-                        }
-                        setCouponDiscount(discount)
-                      })
-                      .catch(err => {
-                        console.error('쿠폰 정보 조회 오류:', err)
-                        setCouponDiscount(0)
-                      })
-                  } else {
-                    setCouponDiscount(0)
-                  }
-                }}
-              />
+              <Select
+                value={selectedCouponId || ''}
+                onChange={(e) => handleCouponChange(e.target.value)}
+              >
+                <option value="">쿠폰을 선택하세요</option>
+                {coupons.map(coupon => {
+                  const applicable = isCouponApplicable(coupon)
+                  const discount = applicable ? calculateCouponDiscount(coupon, subtotal) : 0
+                  const discountText = coupon.discountType === 'PERCENT'
+                    ? `${Math.floor(coupon.discountValue * 100)}% 할인`
+                    : `${coupon.discountValue.toLocaleString()}원 할인`
+
+                  return (
+                    <option
+                      key={coupon.id}
+                      value={coupon.id}
+                      disabled={!applicable}
+                    >
+                      {coupon.name} - {discountText}
+                      {applicable ? ` (${discount.toLocaleString()}원 할인 적용)` : ' (사용 불가)'}
+                    </option>
+                  )
+                })}
+              </Select>
+              {selectedCouponId && couponDiscount > 0 && (
+                <p className="mt-2 text-sm text-green-700">
+                  ✓ {couponDiscount.toLocaleString()}원 할인이 적용됩니다.
+                </p>
+              )}
             </div>
           )}
 

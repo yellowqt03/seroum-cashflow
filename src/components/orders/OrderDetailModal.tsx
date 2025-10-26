@@ -56,11 +56,22 @@ export function OrderDetailModal({ orderId, onClose }: OrderDetailModalProps) {
     const changes: PackageChange[] = []
 
     for (const item of orderData.orderItems) {
-      const isPkg = item.packageType && item.packageType.startsWith('PACKAGE_')
+      // 패키지 구매인지 확인 (package4, package8, package10 또는 PACKAGE_5, PACKAGE_10 등)
+      const isPackagePurchase = item.packageType &&
+        (item.packageType.toLowerCase().startsWith('package') &&
+         item.packageType !== 'single')
 
-      if (isPkg) {
-        // 패키지 구매
-        const pkgCount = parseInt(item.packageType.split('_')[1])
+      if (isPackagePurchase) {
+        // 패키지 구매 - 횟수 추출
+        let pkgCount = 0
+        if (item.packageType.includes('_')) {
+          // PACKAGE_10 형식
+          pkgCount = parseInt(item.packageType.split('_')[1])
+        } else {
+          // package4, package8 형식
+          pkgCount = parseInt(item.packageType.replace(/\D/g, ''))
+        }
+
         changes.push({
           serviceId: item.serviceId,
           serviceName: item.service.name,
@@ -117,7 +128,9 @@ export function OrderDetailModal({ orderId, onClose }: OrderDetailModalProps) {
   }
 
   const isPackagePurchase = order.orderItems.some((item: any) =>
-    item.packageType && item.packageType.startsWith('PACKAGE_')
+    item.packageType &&
+    (item.packageType.toLowerCase().startsWith('package') &&
+     item.packageType !== 'single')
   )
 
   return (
