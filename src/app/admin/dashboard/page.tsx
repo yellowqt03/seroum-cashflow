@@ -1,18 +1,60 @@
-import { redirect } from 'next/navigation'
-import { getSession, isAdmin } from '@/lib/auth'
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { LogoutButton } from '@/components/ui/LogoutButton'
 import { Settings, Users, FileText, BarChart3, ShieldCheck, UserCog, Ticket, CheckCircle, StickyNote } from 'lucide-react'
+import { formatPrice } from '@/lib/utils'
 
-export default async function AdminDashboard() {
-  const user = await getSession()
+interface DashboardStats {
+  todayRevenue: number
+  todayOrderCount: number
+  totalCustomers: number
+}
 
-  if (!user) {
-    redirect('/login')
-  }
+export default function AdminDashboard() {
+  const router = useRouter()
+  const [stats, setStats] = useState<DashboardStats>({
+    todayRevenue: 0,
+    todayOrderCount: 0,
+    totalCustomers: 0
+  })
+  const [loading, setLoading] = useState(true)
+  const [userName, setUserName] = useState('')
 
-  if (!isAdmin(user)) {
-    redirect('/staff/dashboard')
+  useEffect(() => {
+    checkAuthAndFetchData()
+  }, [])
+
+  const checkAuthAndFetchData = async () => {
+    try {
+      // 세션 확인
+      const sessionRes = await fetch('/api/auth/session')
+      if (!sessionRes.ok) {
+        router.push('/login')
+        return
+      }
+
+      const user = await sessionRes.json()
+      if (user.role !== 'ADMIN') {
+        router.push('/staff/dashboard')
+        return
+      }
+
+      setUserName(user.name)
+
+      // 통계 데이터 가져오기
+      const statsRes = await fetch('/api/dashboard/stats')
+      if (statsRes.ok) {
+        const data = await statsRes.json()
+        setStats(data)
+      }
+    } catch (error) {
+      console.error('데이터 로딩 오류:', error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const menuItems = [
@@ -81,7 +123,7 @@ export default async function AdminDashboard() {
                   관리자 대시보드
                 </h1>
                 <p className="text-xs text-slate-600">
-                  {user.name}님 환영합니다
+                  {userName}님 환영합니다
                 </p>
               </div>
             </div>
@@ -98,7 +140,13 @@ export default async function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-slate-600">오늘 매출</p>
-                <p className="text-2xl font-semibold text-slate-900 mt-1">0원</p>
+                <p className="text-2xl font-semibold text-slate-900 mt-1">
+                  {loading ? (
+                    <span className="inline-block w-24 h-8 bg-gray-200 rounded animate-pulse"></span>
+                  ) : (
+                    formatPrice(stats.todayRevenue)
+                  )}
+                </p>
               </div>
               <div className="w-12 h-12 bg-slate-100 rounded-md flex items-center justify-center">
                 <BarChart3 className="h-6 w-6 text-slate-600" />
@@ -110,7 +158,13 @@ export default async function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-slate-600">오늘 주문</p>
-                <p className="text-2xl font-semibold text-slate-900 mt-1">0건</p>
+                <p className="text-2xl font-semibold text-slate-900 mt-1">
+                  {loading ? (
+                    <span className="inline-block w-16 h-8 bg-gray-200 rounded animate-pulse"></span>
+                  ) : (
+                    `${stats.todayOrderCount}건`
+                  )}
+                </p>
               </div>
               <div className="w-12 h-12 bg-slate-100 rounded-md flex items-center justify-center">
                 <FileText className="h-6 w-6 text-slate-600" />
@@ -122,7 +176,13 @@ export default async function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-slate-600">전체 고객</p>
-                <p className="text-2xl font-semibold text-slate-900 mt-1">0명</p>
+                <p className="text-2xl font-semibold text-slate-900 mt-1">
+                  {loading ? (
+                    <span className="inline-block w-16 h-8 bg-gray-200 rounded animate-pulse"></span>
+                  ) : (
+                    `${stats.totalCustomers}명`
+                  )}
+                </p>
               </div>
               <div className="w-12 h-12 bg-slate-100 rounded-md flex items-center justify-center">
                 <Users className="h-6 w-6 text-slate-600" />
