@@ -96,7 +96,7 @@ export async function POST(
           packageCount = parseInt(packageType.replace(/\D/g, ''))
         }
 
-        // PackagePurchase 생성
+        // PackagePurchase 생성 (첫 사용이므로 바로 1회 차감된 상태로 생성)
         const newPackage = await tx.packagePurchase.create({
           data: {
             orderId: id,
@@ -104,10 +104,10 @@ export async function POST(
             serviceId: order.orderItems[0].serviceId,
             packageType: packageType,
             totalCount: packageCount,
-            remainingCount: packageCount,
+            remainingCount: packageCount - 1, // 첫 사용이므로 바로 1회 차감
             purchasePrice: order.finalAmount,
             purchasedAt: new Date(),
-            status: 'ACTIVE'
+            status: packageCount - 1 === 0 ? 'COMPLETED' : 'ACTIVE'
           },
           include: {
             service: { select: { name: true } }
@@ -128,15 +128,25 @@ export async function POST(
         }
       })
 
-      // 2. 패키지 남은 횟수 감소
-      const newRemainingCount = actualPackagePurchase.remainingCount - 1
-      const updatedPackage = await tx.packagePurchase.update({
-        where: { id: actualPackagePurchaseId },
-        data: {
-          remainingCount: newRemainingCount,
-          status: newRemainingCount === 0 ? 'COMPLETED' : 'ACTIVE'
-        }
-      })
+      // 2. 패키지 남은 횟수 감소 (이미 생성된 패키지인 경우만)
+      let newRemainingCount: number
+      let updatedPackage: any
+
+      if (isPendingPurchase && !packagePurchaseId) {
+        // 방금 생성한 패키지는 이미 1회 차감되어 있음
+        newRemainingCount = actualPackagePurchase.remainingCount
+        updatedPackage = actualPackagePurchase
+      } else {
+        // 기존 패키지는 1회 차감 필요
+        newRemainingCount = actualPackagePurchase.remainingCount - 1
+        updatedPackage = await tx.packagePurchase.update({
+          where: { id: actualPackagePurchaseId },
+          data: {
+            remainingCount: newRemainingCount,
+            status: newRemainingCount === 0 ? 'COMPLETED' : 'ACTIVE'
+          }
+        })
+      }
 
       // 3. 주문의 notes에 세션 정보 저장
       let updatedSessionInfo: any = {}
