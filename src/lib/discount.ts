@@ -22,6 +22,7 @@ export interface EnhancedDiscountCalculation extends DiscountCalculation {
 export interface OptimalDiscountOption {
   type: 'customer' | 'package' | 'combination'
   description: string
+  packageType: string  // 추가: 패키지 타입 정보
   discountAmount: number
   finalPrice: number
   discountRate: number
@@ -474,6 +475,7 @@ export function calculateOptimalDiscount(input: DiscountCalculationInput): Optim
     options.push({
       type: 'customer',
       description: 'VIP 할인 (100% 무료)',
+      packageType: 'single',
       discountAmount: vipDiscount,
       finalPrice,
       discountRate: vipDiscount / singlePackagePrice,
@@ -493,6 +495,7 @@ export function calculateOptimalDiscount(input: DiscountCalculationInput): Optim
     options.push({
       type: 'customer',
       description: '생일자 할인 (50%)',
+      packageType: 'single',
       discountAmount: birthdayDiscount,
       finalPrice,
       discountRate: birthdayDiscount / singlePackagePrice,
@@ -512,6 +515,7 @@ export function calculateOptimalDiscount(input: DiscountCalculationInput): Optim
     options.push({
       type: 'customer',
       description: '직원 할인 (50%)',
+      packageType: 'single',
       discountAmount: employeeDiscount,
       finalPrice,
       discountRate: employeeDiscount / singlePackagePrice,
@@ -545,6 +549,7 @@ export function calculateOptimalDiscount(input: DiscountCalculationInput): Optim
       options.push({
         type: 'package',
         description: packageName,
+        packageType: pkgType,
         discountAmount: packageDiscount,
         finalPrice,
         discountRate: packageDiscount / originalPrice,
@@ -567,6 +572,7 @@ export function calculateOptimalDiscount(input: DiscountCalculationInput): Optim
         options.push({
           type: 'combination',
           description: `${packageName} + VIP 할인`,
+          packageType: pkgType,
           discountAmount: totalDiscount,
           finalPrice,
           discountRate: totalDiscount / originalPrice,
@@ -587,6 +593,7 @@ export function calculateOptimalDiscount(input: DiscountCalculationInput): Optim
         options.push({
           type: 'combination',
           description: `${packageName} + 생일자 할인`,
+          packageType: pkgType,
           discountAmount: totalDiscount,
           finalPrice,
           discountRate: totalDiscount / originalPrice,
@@ -607,6 +614,7 @@ export function calculateOptimalDiscount(input: DiscountCalculationInput): Optim
         options.push({
           type: 'combination',
           description: `${packageName} + 직원 할인`,
+          packageType: pkgType,
           discountAmount: totalDiscount,
           finalPrice,
           discountRate: totalDiscount / originalPrice,
@@ -622,6 +630,7 @@ export function calculateOptimalDiscount(input: DiscountCalculationInput): Optim
   options.push({
     type: 'customer',
     description: '할인 없음',
+    packageType: packageType || 'single',
     discountAmount: 0,
     finalPrice: originalPrice,
     discountRate: 0,

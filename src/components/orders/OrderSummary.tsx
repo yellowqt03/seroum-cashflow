@@ -259,7 +259,9 @@ export function OrderSummary({ customer, services, selectedCouponId, paymentMeth
                   <div>
                     <div className="font-medium">{item.service.name}</div>
                     <div className="text-sm text-gray-600">
-                      {item.packageType === 'single' ? '단품' : `${item.packageType.replace('package', '')}회 패키지`} × {item.quantity}
+                      {!item.packageType || item.packageType === 'single'
+                        ? '단품'
+                        : `${item.packageType.replace('package', '')}회 패키지`} × {item.quantity}
                     </div>
                   </div>
                   <div className="text-right">
