@@ -122,13 +122,13 @@ export async function POST(request: Request) {
 
     const finalAmount = Math.max(0, packagePrice - couponDiscount)
 
-    // 트랜잭션으로 주문 및 패키지 구매 생성
+    // 트랜잭션으로 주문 생성 (패키지 구매는 PENDING 상태로 시작)
     const result = await prisma.$transaction(async (tx) => {
-      // 1. 주문 생성
+      // 1. 주문 생성 - PENDING 상태로 시작
       const order = await tx.order.create({
         data: {
           customerId,
-          status: 'COMPLETED',
+          status: 'PENDING',  // PENDING으로 시작
           paymentMethod: paymentMethod || 'CARD',
           subtotal: packagePrice,
           discountAmount: 0,
@@ -136,7 +136,6 @@ export async function POST(request: Request) {
           finalAmount: finalAmount,
           appliedCouponId: couponId || null,
           notes: notes || `${service.name} ${packageType} 구매`,
-          completedAt: new Date(),
           orderItems: {
             create: {
               serviceId,
@@ -157,24 +156,8 @@ export async function POST(request: Request) {
         }
       })
 
-      // 2. 패키지 구매 이력 생성
-      const packagePurchase = await tx.packagePurchase.create({
-        data: {
-          customerId,
-          serviceId,
-          packageType,
-          totalCount,
-          remainingCount: totalCount,
-          purchasePrice: packagePrice,
-          orderId: order.id,
-          status: 'ACTIVE',
-          notes: notes || undefined
-        },
-        include: {
-          customer: true,
-          service: true
-        }
-      })
+      // 2. 패키지 구매는 주문 완료 시점에 생성
+      // (PENDING 상태에서는 패키지 생성하지 않음)
 
       // 3. 쿠폰 사용 이력 생성 (쿠폰을 사용한 경우)
       if (couponId && coupon) {
@@ -197,7 +180,7 @@ export async function POST(request: Request) {
         })
       }
 
-      return { order, packagePurchase }
+      return { order }
     })
 
     return NextResponse.json(result, { status: 201 })
