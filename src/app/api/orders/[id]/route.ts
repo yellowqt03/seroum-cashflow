@@ -136,10 +136,22 @@ export async function PUT(
         })
 
         for (const orderItem of orderItems) {
-          // 패키지 구매인 경우 (packageType이 PACKAGE_5, PACKAGE_10 등)
-          if (orderItem.packageType && orderItem.packageType.startsWith('PACKAGE_')) {
-            // 패키지 횟수 추출 (PACKAGE_5 -> 5, PACKAGE_10 -> 10)
-            const packageCount = parseInt(orderItem.packageType.split('_')[1])
+          // 패키지 구매인 경우 (packageType이 package4, package8, package10 또는 PACKAGE_5, PACKAGE_10 등)
+          const isPackagePurchase = orderItem.packageType &&
+            (orderItem.packageType.toLowerCase().startsWith('package') &&
+             orderItem.packageType !== 'single')
+
+          if (isPackagePurchase) {
+            // 패키지 횟수 추출
+            // "package4" -> 4, "package8" -> 8, "PACKAGE_10" -> 10
+            let packageCount = 0
+            if (orderItem.packageType.includes('_')) {
+              // PACKAGE_10 형식
+              packageCount = parseInt(orderItem.packageType.split('_')[1])
+            } else {
+              // package4, package8 형식
+              packageCount = parseInt(orderItem.packageType.replace(/\D/g, ''))
+            }
 
             // 중복 생성 방지 - 이미 패키지 구매 기록이 있는지 확인
             const existingPackage = await tx.packagePurchase.findFirst({
