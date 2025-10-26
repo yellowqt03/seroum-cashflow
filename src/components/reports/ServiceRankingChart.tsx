@@ -97,7 +97,12 @@ export function ServiceRankingChart({ data, limit = 10 }: ServiceRankingChartPro
             style={{ fontSize: '12px' }}
             width={90}
           />
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip
+            content={<CustomTooltip />}
+            animationDuration={0}
+            isAnimationActive={false}
+            cursor={false}
+          />
           <Bar
             dataKey="count"
             fill="#0f172a"

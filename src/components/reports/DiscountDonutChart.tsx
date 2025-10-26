@@ -134,7 +134,11 @@ export function DiscountDonutChart({ stats }: DiscountDonutChartProps) {
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip
+              content={<CustomTooltip />}
+              animationDuration={0}
+              isAnimationActive={false}
+            />
             <Legend
               verticalAlign="bottom"
               height={36}

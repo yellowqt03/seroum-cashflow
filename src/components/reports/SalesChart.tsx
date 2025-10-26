@@ -105,7 +105,12 @@ export function SalesChart({ data, period = 'month' }: SalesChartProps) {
             style={{ fontSize: '12px' }}
             tickFormatter={formatCurrency}
           />
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip
+            content={<CustomTooltip />}
+            animationDuration={0}
+            isAnimationActive={false}
+            cursor={false}
+          />
           <Legend
             wrapperStyle={{ fontSize: '14px' }}
           />
