@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useToast } from '@/components/providers/ToastProvider'
-import { Package, Clock, CheckCircle, XCircle, RefreshCw } from 'lucide-react'
+import { Package, Clock, CheckCircle, XCircle, RefreshCw, Minus, Plus, History } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 
 interface PackagePurchase {
@@ -39,6 +39,7 @@ export function PackageList({ customerId }: PackageListProps) {
   const [packages, setPackages] = useState<PackagePurchase[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all')
+  const [adjustingPackageId, setAdjustingPackageId] = useState<string | null>(null)
 
   useEffect(() => {
     fetchPackages()
@@ -113,6 +114,34 @@ export function PackageList({ customerId }: PackageListProps) {
         )
       default:
         return null
+    }
+  }
+
+  const handleAdjustPackage = async (packageId: string, action: 'use' | 'restore', count: number) => {
+    const note = prompt(`${action === 'use' ? '사용' : '복구'} 사유를 입력해주세요 (선택사항):`)
+    if (note === null) return // 취소한 경우
+
+    try {
+      setAdjustingPackageId(packageId)
+      const response = await fetch(`/api/packages/${packageId}/adjust`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, count, note })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || '패키지 조정에 실패했습니다.')
+      }
+
+      showToast(data.message, 'success')
+      await fetchPackages() // 목록 새로고침
+    } catch (error) {
+      console.error('패키지 조정 오류:', error)
+      showToast(error instanceof Error ? error.message : '패키지 조정에 실패했습니다.', 'error')
+    } finally {
+      setAdjustingPackageId(null)
     }
   }
 
@@ -203,7 +232,7 @@ export function PackageList({ customerId }: PackageListProps) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="grid grid-cols-2 gap-4 text-sm mb-3">
                 <div>
                   <p className="text-gray-500 mb-1">구매일</p>
                   <p className="font-medium">
@@ -217,6 +246,32 @@ export function PackageList({ customerId }: PackageListProps) {
                   </p>
                 </div>
               </div>
+
+              {/* 수동 조정 버튼 (ACTIVE 상태일 때만) */}
+              {pkg.status === 'ACTIVE' && (
+                <div className="flex gap-2 mt-3 pt-3 border-t">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleAdjustPackage(pkg.id, 'use', 1)}
+                    disabled={pkg.remainingCount === 0 || adjustingPackageId === pkg.id}
+                    className="flex-1 text-orange-600 border-orange-200 hover:bg-orange-50"
+                  >
+                    <Minus className="h-4 w-4 mr-1" />
+                    1회 사용
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleAdjustPackage(pkg.id, 'restore', 1)}
+                    disabled={pkg.remainingCount >= pkg.totalCount || adjustingPackageId === pkg.id}
+                    className="flex-1 text-green-600 border-green-200 hover:bg-green-50"
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    1회 복구
+                  </Button>
+                </div>
+              )}
 
               {pkg.expiresAt && (
                 <div className="mt-3 pt-3 border-t">
