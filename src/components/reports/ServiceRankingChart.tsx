@@ -5,8 +5,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 interface ServiceRankingChartProps {
   data: Array<{
     serviceName: string
-    totalCount: number
-    totalRevenue: number
+    totalQuantity: number
+    totalSales: number
   }>
   limit?: number
 }
@@ -29,8 +29,8 @@ export function ServiceRankingChart({ data, limit = 10 }: ServiceRankingChartPro
       ? item.serviceName.substring(0, 15) + '...'
       : (item.serviceName || 'Unknown'),
     fullName: item.serviceName || 'Unknown',
-    count: item.totalCount || 0,
-    revenue: item.totalRevenue || 0,
+    count: item.totalQuantity || 0,
+    revenue: item.totalSales || 0,
     rank: index + 1,
   }))
 
@@ -129,7 +129,7 @@ export function ServiceRankingChart({ data, limit = 10 }: ServiceRankingChartPro
               {item.serviceName || 'Unknown'}
             </p>
             <p className="text-xs text-gray-600">
-              {item.totalCount || 0}건 • {(item.totalRevenue || 0).toLocaleString()}원
+              {item.totalQuantity || 0}건 • {(item.totalSales || 0).toLocaleString()}원
             </p>
           </div>
         ))}
