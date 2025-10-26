@@ -5,7 +5,8 @@ import { useToast } from '@/components/providers/ToastProvider'
 import { Button } from '@/components/ui/Button'
 import { Select } from '@/components/ui/Select'
 import { Input } from '@/components/ui/Input'
-import { X, Package } from 'lucide-react'
+import { X, Package, Tag } from 'lucide-react'
+import CouponSelector from '@/components/orders/CouponSelector'
 
 interface Service {
   id: string
@@ -30,6 +31,8 @@ export function PackagePurchaseForm({
   const { showToast } = useToast()
   const [services, setServices] = useState<Service[]>([])
   const [loading, setLoading] = useState(false)
+  const [selectedCouponId, setSelectedCouponId] = useState<string | null>(null)
+  const [couponDiscount, setCouponDiscount] = useState(0)
   const [formData, setFormData] = useState({
     serviceId: '',
     packageType: '',
@@ -90,6 +93,10 @@ export function PackagePurchaseForm({
   const packageOptions = getPackageOptions()
   const selectedPackage = packageOptions.find(opt => opt.value === formData.packageType)
 
+  // 쿠폰 적용된 최종 금액 계산
+  const subtotal = selectedPackage?.price || 0
+  const finalAmount = Math.max(0, subtotal - couponDiscount)
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -105,7 +112,8 @@ export function PackagePurchaseForm({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           customerId,
-          ...formData
+          ...formData,
+          couponId: selectedCouponId
         })
       })
 
@@ -188,6 +196,24 @@ export function PackagePurchaseForm({
             </div>
           )}
 
+          {/* 쿠폰 선택 */}
+          {selectedPackage && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                <Tag className="h-4 w-4" />
+                할인 쿠폰 (선택사항)
+              </label>
+              <CouponSelector
+                customerId={customerId}
+                subtotal={subtotal}
+                onCouponSelect={(couponId, discount) => {
+                  setSelectedCouponId(couponId)
+                  setCouponDiscount(discount)
+                }}
+              />
+            </div>
+          )}
+
           {/* 결제 정보 */}
           {selectedPackage && (
             <div className="bg-blue-50 rounded-lg p-4">
@@ -205,10 +231,24 @@ export function PackagePurchaseForm({
                     {formData.packageType === 'package10' && '10회'}
                   </span>
                 </div>
+                <div className="flex justify-between">
+                  <span>패키지 금액</span>
+                  <span className="font-medium">
+                    {subtotal.toLocaleString()}원
+                  </span>
+                </div>
+                {couponDiscount > 0 && (
+                  <div className="flex justify-between text-green-700">
+                    <span>쿠폰 할인</span>
+                    <span className="font-medium">
+                      -{couponDiscount.toLocaleString()}원
+                    </span>
+                  </div>
+                )}
                 <div className="flex justify-between pt-2 border-t border-blue-200">
-                  <span className="font-semibold">결제 금액</span>
+                  <span className="font-semibold">최종 결제 금액</span>
                   <span className="font-bold text-lg">
-                    {selectedPackage.price.toLocaleString()}원
+                    {finalAmount.toLocaleString()}원
                   </span>
                 </div>
               </div>
