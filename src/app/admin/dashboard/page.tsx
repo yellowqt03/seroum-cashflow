@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { LogoutButton } from '@/components/ui/LogoutButton'
+import { BirthdayNotificationModal } from '@/components/dashboard/BirthdayNotificationModal'
 import { Settings, Users, FileText, BarChart3, ShieldCheck, UserCog, Ticket, CheckCircle, StickyNote } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
 
@@ -22,10 +23,34 @@ export default function AdminDashboard() {
   })
   const [loading, setLoading] = useState(true)
   const [userName, setUserName] = useState('')
+  const [showBirthdayModal, setShowBirthdayModal] = useState(false)
 
   useEffect(() => {
     checkAuthAndFetchData()
   }, [])
+
+  useEffect(() => {
+    // 대시보드 로드 후 3초 뒤에 생일 알림 체크
+    const timer = setTimeout(() => {
+      checkBirthdayNotification()
+    }, 3000)
+
+    return () => clearTimeout(timer)
+  }, [loading])
+
+  const checkBirthdayNotification = async () => {
+    try {
+      const response = await fetch('/api/coupons/birthday')
+      if (response.ok) {
+        const data = await response.json()
+        if (data.customers && data.customers.length > 0) {
+          setShowBirthdayModal(true)
+        }
+      }
+    } catch (error) {
+      console.error('생일 알림 확인 오류:', error)
+    }
+  }
 
   const checkAuthAndFetchData = async () => {
     try {
@@ -230,6 +255,13 @@ export default function AdminDashboard() {
           </div>
         </div>
       </main>
+
+      {/* 생일 알림 모달 */}
+      {showBirthdayModal && (
+        <BirthdayNotificationModal
+          onClose={() => setShowBirthdayModal(false)}
+        />
+      )}
     </div>
   )
 }
